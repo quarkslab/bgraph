@@ -4,11 +4,19 @@ BGraph
 `BGraph` is a tool designed to generate dependencies graphs from `Android.bp` soong files.
 
 ## Overview
+`BGraph` (for `Build-Graphs`) is a project aimed at create build graphs from _blueprints_ in AOSP and querying those graphs.
 
-The tool is divided in two independents parts :
+In short, this project builds/uses Unified Dependency Graph for the [Android Open Source Project](https://source.android.com/) by parsing and linking modules 
+defined in the Android build system [Soong](https://source.android.com/setup/build). 
 
-* a BGraph generator to generate BGraphs from AOSP versions
-* a BGraph tool to query the generated graphs 
+### Use-cases
+
+You should use this tool if you want to find:
+
+* all the dependencies of a source file in AOSP; 
+* all the sources involved in the building of a target in AOSP;
+* common dependencies between two targets.
+
 
 ## Usage
 ```bash
@@ -48,7 +56,7 @@ Commands:
 poetry install bgraph
 ```
 
-### Using pip (not available yet)
+### Using pip
 ```bash
 pip install bgraph
 ```
