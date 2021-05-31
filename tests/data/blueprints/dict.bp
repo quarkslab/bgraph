@@ -1,0 +1,8 @@
+cc_library_shared {
+    name: "libnfc-nci",
+    arch: {
+        arm: {
+            instruction_set: "arm",
+        },
+    },
+}

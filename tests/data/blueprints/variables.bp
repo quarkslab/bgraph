@@ -1,0 +1,8 @@
+subdirs = ["*",]
+value = 2
+
+cc_library {
+    name: "linker",
+    value_int: value,
+    subdirs: subdirs,
+}

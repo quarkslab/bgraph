@@ -1,0 +1,5 @@
+cc_binary {
+    name: "linker",
+    static_executable: true,
+    native_coverage: false,
+}

@@ -1,0 +1,42 @@
+site_name: BGraph
+site_description: Build Graphs - Exploring build dependencies
+repo_url: "https://gitlab.qb/achallande/bgraph"
+repo_name: "achallande/bgraph"
+
+theme:
+  name: material
+  palette:
+    scheme: slate
+
+
+nav:
+  - Overview: index.md
+  - Installation: installation.md
+  - Docker: docker.md
+  - Building: building.md
+  - Querying: query.md
+  - Innerworkings: explanations.md
+  - Contribution: contribute.md
+  - Roadmap: roadmap.md
+  - Limitations: limitations.md
+  - API Reference:
+      - builder: reference/builder/builder.md
+      - parsers: reference/parsers/parsers.md
+      - viewer: reference/viewer/viewer.md
+      - utils: reference/utils.md
+
+markdown_extensions:
+  - admonition
+  - pymdownx.superfences
+  - pymdownx.highlight
+
+
+plugins:
+  - mkdocstrings:
+      handlers:
+        python:
+          selection:
+            docstring_style: "restructured-text"
+      watch:
+        - src/bgraph
+  - search

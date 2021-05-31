@@ -1,0 +1,7 @@
+cc_binary {
+    name: "linker",
+    cflags: ["-DHAVE_CONFIG_H"] + [
+        "-DSIZEOF_KERNEL_LONG_T=SIZEOF_LONG",
+        "-DSIZEOF_OFF_T=SIZEOF_LONG",
+        ]
+}
