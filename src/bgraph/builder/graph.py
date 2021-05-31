@@ -100,7 +100,7 @@ def convert_section(
     # Project Path
     try:
         project_path: Path = section[
-        bgraph.parsers.soong_parser.SoongParser.SECTION_PROJECT_PATH
+            bgraph.parsers.soong_parser.SoongParser.SECTION_PROJECT_PATH
         ]
     except KeyError:
         logger.error("Missing section_project_path in %s", section_name)
