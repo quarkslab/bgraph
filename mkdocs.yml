@@ -1,7 +1,7 @@
 site_name: BGraph
-site_description: Build Graphs - Exploring build dependencies
-repo_url: "https://gitlab.qb/achallande/bgraph"
-repo_name: "achallande/bgraph"
+site_description: Build Graphs - Exploring AOSP Unified Depedency Graphs
+repo_url: "https://github.com/quarkslab/bgraph"
+repo_name: "quarkslab/bgraph"
 
 theme:
   name: material
