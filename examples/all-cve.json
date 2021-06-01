@@ -1,0 +1,10 @@
+[
+    {
+        "cve_id": "CVE-2020-0471",
+        "component": "System",
+        "commit": "ca6b0a211eb39ba85eed60ea740c85d1122fc6bc",
+        "files": [
+            "hci/src/packet_fragmenter.cc"
+        ]
+    }
+]
