@@ -4,7 +4,17 @@ import functools
 import networkx as nx  # type: ignore
 
 import bgraph
-from bgraph.types import List, Union, Dict, Set, NodeType, Tuple, Optional, overload
+from bgraph.types import (
+    List,
+    Union,
+    Dict,
+    Set,
+    NodeType,
+    Tuple,
+    Optional,
+    overload,
+    BGraph,
+)
 import bgraph.exc
 
 
@@ -78,20 +88,8 @@ def match_node(graph_srcs: List[str], node_name: str) -> str:
     return potential_results.pop()
 
 
-@functools.lru_cache(maxsize=8)
-def get_graph_srcs(graph: nx.DiGraph) -> List[str]:
-    """Filter the graph to return only source nodes.
-
-    This method is used to improve the efficiency of the `match_node` method.
-
-    :param graph: The BGraph to filter
-    :return: A list of graph nodes representing source file.
-    """
-    return [node for node in graph if get_node_type(node) == "source"]
-
-
 def find_target(
-    graph: nx.DiGraph,
+    graph: BGraph,
     source: str,
     return_types: List[str] = DEFAULT_TYPES,
     radius: Optional[int] = None,
@@ -134,7 +132,19 @@ def find_target(
     return matched_node, results
 
 
-def find_dependency(graph: nx.DiGraph, origin: str) -> List[str]:
+@functools.lru_cache(maxsize=8)
+def get_graph_srcs(graph: BGraph) -> List[str]:
+    """Filter the graph to return only source nodes.
+
+    This method is used to improve the efficiency of the `match_node` method.
+
+    :param graph: The BGraph to filter
+    :return: A list of graph nodes representing source file.
+    """
+    return [node for node in graph if get_node_type(node) == "source"]
+
+
+def find_dependency(graph: BGraph, origin: str) -> List[str]:
     """Resolve dependencies in a graph.
 
     Given an origin (which is *not* a source file), find all dependents targets
@@ -157,7 +167,7 @@ def find_dependency(graph: nx.DiGraph, origin: str) -> List[str]:
     return list(set(subgraph).union(set(other_subgraph)))
 
 
-def find_sources(graph: nx.DiGraph, target: str) -> List[str]:
+def find_sources(graph: BGraph, target: str) -> List[str]:
     """Find the sources of target.
 
     Recursively in the graph, search for all sources files of a target (or a target
