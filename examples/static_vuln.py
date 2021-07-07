@@ -29,9 +29,7 @@ import pathlib
 from typing import Set, List, Any
 
 import bgraph
-from bgraph.types import NodeType
-
-BGraph = networkx.DiGraph
+from bgraph.types import NodeType, BGraph
 
 
 @dataclasses.dataclass

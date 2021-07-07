@@ -1,5 +1,7 @@
 import enum
 import pathlib
+import networkx  # type: ignore
+
 from typing import (
     Any,
     Callable,
@@ -42,6 +44,9 @@ ResultDict = TypedDict(
     "ResultDict", {"sources": List[str], "target": List[Tuple[str, str]]}, total=False
 )
 """Type of a result dict (used in formatter)."""
+
+BGraph = networkx.DiGraph
+"""Type of a BGraph: a simple directed graph"""
 
 
 # TODO(dm): Wait until TypedDict accept Final as keys to rewrite this

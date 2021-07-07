@@ -8,6 +8,7 @@ import pydot  # type: ignore
 import typer
 
 from bgraph.types import (
+    BGraph,
     OutChoice,
     QueryType,
     List,
@@ -22,7 +23,7 @@ import bgraph.exc
 
 
 def format_result(
-    graph: networkx.DiGraph,
+    graph: BGraph,
     results: List[str],
     query: QueryType,
     query_value: str,
@@ -47,7 +48,7 @@ def format_result(
 
 
 def format_text(
-    graph: networkx.DiGraph, results: List[str], query: QueryType, query_value: str
+    graph: BGraph, results: List[str], query: QueryType, query_value: str
 ) -> None:
     """Format the results for text consumption (default value).
 
@@ -94,7 +95,7 @@ def format_text(
         # Generate the graph to compute the distance
         # Since the graph is much simpler than the original one, it is easier to compute
         # the distance inside this one.
-        generated_graph: networkx.DiGraph = networkx.generators.ego_graph(
+        generated_graph: BGraph = networkx.generators.ego_graph(
             graph, query_value, center=True, radius=None
         )
 
@@ -117,7 +118,7 @@ def format_text(
 
 
 def format_dot(
-    graph: networkx.DiGraph, results: List[str], query: QueryType, query_value: str
+    graph: BGraph, results: List[str], query: QueryType, query_value: str
 ) -> None:
     """Output result as DOT.
 
@@ -161,7 +162,7 @@ def format_dot(
 
 
 def format_json(
-    graph: networkx.DiGraph, results: List[str], query: QueryType, query_value: str
+    graph: BGraph, results: List[str], query: QueryType, query_value: str
 ) -> None:
     """Output the result as JSON
 

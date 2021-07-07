@@ -16,7 +16,7 @@ import networkx as nx  # type: ignore
 
 import bgraph.parsers.soong_parser
 import bgraph.utils
-from bgraph.types import Iterable, Dict, List, Tuple, Literal, Optional, Section
+from bgraph.types import Iterable, Dict, List, Tuple, Literal, Optional, Section, BGraph
 
 
 """In Soong files, keys what indicates dependencies between targets"""
@@ -75,7 +75,7 @@ def compute_file_list(
 
 
 def convert_section(
-    graph: nx.DiGraph,
+    graph: BGraph,
     section_files: Dict[Path, List[str]],
     section_name: str,
     section: Section,
@@ -158,46 +158,6 @@ def convert_section(
                     graph.add_edge(dep, section_name, type=edge_type)
 
 
-def build_source_map(sp: bgraph.parsers.soong_parser.SoongParser) -> nx.DiGraph:
-    """
-    From a SoongParser object, converts all the targets into a graph representation where
-    the links between two nodes are :
-        - a dependency link if the origin is induced in the destination
-        - a source link if the origin is a source file and the destination a target
-
-    The graphs are saved as networkx objects with pickle.
-
-    :param: sp: The soong parser
-    :return: An UDG as a DiGraph
-    """
-    graph = nx.DiGraph()
-
-    for target in sp.sections:
-        graph.add_node(target, data=sp.get_section(target))
-
-    file_listing = sp.file_listing
-
-    section_files: Dict[Path, List[str]] = {}
-
-    nodes = list(graph.nodes)
-    for idx, section_name in enumerate(nodes):
-        if idx % 500 == 0:
-            logger.debug("Converting section %d / %d", idx, len(nodes))
-
-        for section in graph.nodes[section_name]["data"]:
-
-            project_path: Path = section.get(
-                bgraph.parsers.soong_parser.SoongParser.SECTION_PROJECT_PATH
-            )
-            project_files: List[str] = sp.file_listing.get(project_path, [])
-            if not project_files:
-                logger.info(f"Cannot find files for project {section_name}")
-
-            convert_section(graph, section_files, section_name, section, project_files)
-
-    return graph
-
-
 def convert_single(result_dir: Path, pickle_file: Path) -> Tuple[str, bool]:
     """Convert a pickle file representing a soong parser to a graph and store it in
     result dir.
@@ -252,3 +212,43 @@ def convert(pickle_dir: Path, result_dir: Path) -> None:
             count_success += 1
 
     logger.info("Converted %d/%d branches", count_success, len(results))
+
+
+def build_source_map(sp: bgraph.parsers.soong_parser.SoongParser) -> BGraph:
+    """
+    From a SoongParser object, converts all the targets into a graph representation where
+    the links between two nodes are :
+        - a dependency link if the origin is induced in the destination
+        - a source link if the origin is a source file and the destination a target
+
+    The graphs are saved as networkx objects with pickle.
+
+    :param: sp: The soong parser
+    :return: An UDG as a DiGraph
+    """
+    graph: BGraph = nx.DiGraph()
+
+    for target in sp.sections:
+        graph.add_node(target, data=sp.get_section(target))
+
+    file_listing = sp.file_listing
+
+    section_files: Dict[Path, List[str]] = {}
+
+    nodes = list(graph.nodes)
+    for idx, section_name in enumerate(nodes):
+        if idx % 500 == 0:
+            logger.debug("Converting section %d / %d", idx, len(nodes))
+
+        for section in graph.nodes[section_name]["data"]:
+
+            project_path: Path = section.get(
+                bgraph.parsers.soong_parser.SoongParser.SECTION_PROJECT_PATH
+            )
+            project_files: List[str] = sp.file_listing.get(project_path, [])
+            if not project_files:
+                logger.info(f"Cannot find files for project {section_name}")
+
+            convert_section(graph, section_files, section_name, section, project_files)
+
+    return graph
