@@ -5,7 +5,7 @@ license = "Apache-2.0"
 description = ""
 authors = ["A. Challande <achallande@quarkslab.com>"]
 readme = "README.md"
-documentation = "https://achallande.doc.qb/bgraph/"
+documentation = "https://quarkslab.github.io/bgraph"
 classifiers = [
   "Operating System :: Android",
   "Topic :: Software Development :: Build Tools",

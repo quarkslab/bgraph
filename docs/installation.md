@@ -33,7 +33,7 @@ pip install bgraph
     [Poetry](https://python-poetry.org/) is a python packaging and dependency manager
 
 ```bash
-$ git clone gitlab@gitlab.qb:achallande/bgraph.git
+$ git clone git@github.com:quarkslab/bgraph.git
 $ cd bgraph
 $ poetry install --no-dev
 ```
