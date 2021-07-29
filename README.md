@@ -82,7 +82,7 @@ See [Docker](docs/docker.md) for more instructions.
 See [Building from AOSP](docs/building.md) for more details.
 
 ## Documentation
-[Documentation](https://achallande.doc.qb/bgraph)
+[Documentation](https://quarkslab.github.io/bgraph)
 
 ## Licence
 [Apache-2](https://choosealicense.com/licenses/apache-2.0)
