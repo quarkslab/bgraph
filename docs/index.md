@@ -56,9 +56,18 @@ pip install bgraph
 See [Installation](installation.md) for more detailed information or other options.
 
 ## Citation
-This tool is the companion of the SSTIC Presentation (TODO(dm) REF)
+This tool is the companion of the SSTIC Presentation 
 If you want to cite it, you may use the following bibtex.
 
 ```text
-@
+@inproceedings{challande_exploitation_2021,
+	location = {Rennes, France},
+	title = {Exploitation du graphe de dépendance d'{AOSP} à des fins de sécurité},
+	url = {https://www.sstic.org/2021/presentation/bgraph/},
+	pages = {357--365},
+	booktitle = {Symposium sur la Sécurité des Technologies de l'Information et des Communications 2021},
+	author = {Challande, Alexis and Renault, Guénael and David, Robin},
+	date = {2021-06},
+	langid = {french}
+}
 ```
