@@ -1,20 +1,19 @@
 import pickle
 import pathlib
-import networkx  # type: ignore
 
 import bgraph.exc
 from bgraph.types import Union, BGraph
 
 
-def load_graph(graph: Union[str, pathlib.Path]) -> BGraph:
+def load_graph(graph_path: Union[str, pathlib.Path]) -> BGraph:
     """Load a B-Graph and return the DiGraph associated.
 
     :param graph: Path to the graph file (stored with pickle)
     :return: A DiGraph
     """
     try:
-        bgraph: BGraph = pickle.load(open(graph, "rb"))
+        graph: BGraph = pickle.load(open(graph_path, "rb"))
     except (pickle.PickleError, FileNotFoundError):
-        raise bgraph.exc.BGraphLoadingException()
+        raise bgraph.exc.BGraphLoadingException("Unable to load the graph.")
 
-    return bgraph
+    return graph
