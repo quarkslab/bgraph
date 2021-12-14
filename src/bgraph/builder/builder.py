@@ -61,7 +61,7 @@ def get_all_branches(
         except ValueError:
             continue
 
-        if tag.startswith("refs/tags/") and not "^" in tag:
+        if tag.startswith("refs/tags/") and "^" not in tag:
             branches.append(tag[len("refs/tags/") :])
 
     return branches
