@@ -108,7 +108,9 @@ def create_manifest_branch(
         )
     except sh.ErrorReturnCode:
         logger.error(
-            "Unable to init the repository. Verify that the mirror is correct."
+            "Unable to init the repository for branch %s. Verify that either the mirror"
+            "is correct or the branch exists on the target.",
+            branch_name,
         )
         raise bgraph.exc.BGraphBuilderException("Repo init failed.")
 
