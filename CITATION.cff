@@ -1,0 +1,30 @@
+cff-version: 1.2.0
+message: If you use this software, please cite the article from preferred-citation.
+title: BGraph
+abstract: BGraph is a tool designed to generate dependencies graphs from Android.bp soong files.
+
+authors:
+  - family-names: Challande
+    given-name: Alexis
+    orcid: "https://orcid.org/0000-0001-9116-709X"
+
+date-released: "2021-06-04"
+
+repository-code: https://github.com/quarkslab/bgraph
+version: v0.1.0
+license: Apache-2.0
+
+preferred-citation:
+  authors:
+  - family-names: Challande
+    given-name: Alexis
+    orcid: "https://orcid.org/0000-0001-9116-709X"
+  - family-names: Renault
+    given-name: Guenael
+    orcid: "https://orcid.org/0000-0002-7050-9975"
+  - family-names: David
+    given-name: Robin
+    orcid: "https://orcid.org/0000-0001-5722-8338"
+  title: Exploitation du graphe de dépendance d'AOSP à des fins de sécurité
+  type: article
+  year: 2021
