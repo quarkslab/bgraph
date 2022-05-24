@@ -1,0 +1,2325 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Build Graphs - Exploring AOSP Unified Depedency Graphs">
+      
+      
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-7.1.5">
+    
+    
+      
+        <title>builder - BGraph</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.bde7dde4.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ef6f36e2.min.css">
+        
+      
+    
+    
+    
+      
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+        <style>:root{--md-text-font-family:"Roboto";--md-code-font-family:"Roboto Mono"}</style>
+      
+    
+    
+    
+      <link rel="stylesheet" href="../../../assets/_mkdocstrings.css">
+    
+    
+      
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="" data-md-color-accent="">
+  
+    
+    <script>function __prefix(e){return new URL("../../..",location).pathname+"."+e}function __get(e,t=localStorage){return JSON.parse(t.getItem(__prefix(e)))}</script>
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#bgraph.builder" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="BGraph" class="md-header__button md-logo" aria-label="BGraph" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            BGraph
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              builder
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+      </label>
+      
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" data-md-state="active" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </label>
+      <button type="reset" class="md-search__icon md-icon" aria-label="Clear" tabindex="-1">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        
+<a href="https://github.com/quarkslab/bgraph/" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    quarkslab/bgraph
+  </div>
+</a>
+      </div>
+    
+  </nav>
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="BGraph" class="md-nav__button md-logo" aria-label="BGraph" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
+
+    </a>
+    BGraph
+  </label>
+  
+    <div class="md-nav__source">
+      
+<a href="https://github.com/quarkslab/bgraph/" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    quarkslab/bgraph
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        Overview
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../installation/" class="md-nav__link">
+        Installation
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../docker/" class="md-nav__link">
+        Docker
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../building/" class="md-nav__link">
+        Building
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../query/" class="md-nav__link">
+        Querying
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../explanations/" class="md-nav__link">
+        Innerworkings
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../contribute/" class="md-nav__link">
+        Contribution
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../roadmap/" class="md-nav__link">
+        Roadmap
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../limitations/" class="md-nav__link">
+        Limitations
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_10" type="checkbox" id="__nav_10" checked>
+      
+      <label class="md-nav__link" for="__nav_10">
+        API Reference
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="API Reference" data-md-level="1">
+        <label class="md-nav__title" for="__nav_10">
+          <span class="md-nav__icon md-icon"></span>
+          API Reference
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          builder
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        builder
+      </a>
+      
+        
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#bgraph.builder" class="md-nav__link">
+    bgraph.builder
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bgraph.builder.builder" class="md-nav__link">
+    builder
+  </a>
+  
+    <nav class="md-nav" aria-label="builder">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bgraph.builder.builder.clean_disk" class="md-nav__link">
+    clean_disk()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bgraph.builder.builder.combine_files_path" class="md-nav__link">
+    combine_files_path()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bgraph.builder.builder.compose_all" class="md-nav__link">
+    compose_all()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bgraph.builder.builder.compose_manifest_branch" class="md-nav__link">
+    compose_manifest_branch()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bgraph.builder.builder.create_manifest_branch" class="md-nav__link">
+    create_manifest_branch()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bgraph.builder.builder.get_all_branches" class="md-nav__link">
+    get_all_branches()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bgraph.builder.builder.partial_checkout" class="md-nav__link">
+    partial_checkout()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bgraph.builder.builder.project_checkout" class="md-nav__link">
+    project_checkout()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bgraph.builder.graph" class="md-nav__link">
+    graph
+  </a>
+  
+    <nav class="md-nav" aria-label="graph">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bgraph.builder.graph.dependencies_keys" class="md-nav__link">
+    dependencies_keys
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bgraph.builder.graph.build_source_map" class="md-nav__link">
+    build_source_map()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bgraph.builder.graph.compute_file_list" class="md-nav__link">
+    compute_file_list()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bgraph.builder.graph.convert" class="md-nav__link">
+    convert()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bgraph.builder.graph.convert_section" class="md-nav__link">
+    convert_section()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bgraph.builder.graph.convert_single" class="md-nav__link">
+    convert_single()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../parsers/parsers/" class="md-nav__link">
+        parsers
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../viewer/viewer/" class="md-nav__link">
+        viewer
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/" class="md-nav__link">
+        utils
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#bgraph.builder" class="md-nav__link">
+    bgraph.builder
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bgraph.builder.builder" class="md-nav__link">
+    builder
+  </a>
+  
+    <nav class="md-nav" aria-label="builder">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bgraph.builder.builder.clean_disk" class="md-nav__link">
+    clean_disk()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bgraph.builder.builder.combine_files_path" class="md-nav__link">
+    combine_files_path()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bgraph.builder.builder.compose_all" class="md-nav__link">
+    compose_all()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bgraph.builder.builder.compose_manifest_branch" class="md-nav__link">
+    compose_manifest_branch()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bgraph.builder.builder.create_manifest_branch" class="md-nav__link">
+    create_manifest_branch()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bgraph.builder.builder.get_all_branches" class="md-nav__link">
+    get_all_branches()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bgraph.builder.builder.partial_checkout" class="md-nav__link">
+    partial_checkout()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bgraph.builder.builder.project_checkout" class="md-nav__link">
+    project_checkout()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bgraph.builder.graph" class="md-nav__link">
+    graph
+  </a>
+  
+    <nav class="md-nav" aria-label="graph">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bgraph.builder.graph.dependencies_keys" class="md-nav__link">
+    dependencies_keys
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bgraph.builder.graph.build_source_map" class="md-nav__link">
+    build_source_map()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bgraph.builder.graph.compute_file_list" class="md-nav__link">
+    compute_file_list()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bgraph.builder.graph.convert" class="md-nav__link">
+    convert()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bgraph.builder.graph.convert_section" class="md-nav__link">
+    convert_section()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bgraph.builder.graph.convert_single" class="md-nav__link">
+    convert_single()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content" data-md-component="content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                  <a href="https://github.com/quarkslab/bgraph/edit/master/docs/reference/builder/builder.md" title="Edit this page" class="md-content__button md-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25z"/></svg>
+                  </a>
+                
+                
+                  <h1>builder</h1>
+                
+                <div class="doc doc-object doc-module">
+
+<a id="bgraph.builder"></a>
+    <div class="doc doc-contents first">
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+  <div class="doc doc-object doc-module">
+
+
+
+<h2 id="bgraph.builder.builder" class="doc doc-heading">
+        <code>builder</code>
+
+
+
+</h2>
+
+    <div class="doc doc-contents ">
+
+      <p>Author: dm (achallande@quarkslab.com)</p>
+<p>Create source maps for AOSP.</p>
+<p>Prerequistes:
+    - a recent git version (&gt;2.20)
+    - an AOSP mirror
+    - time</p>
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+  <div class="doc doc-object doc-function">
+
+
+
+<h3 id="bgraph.builder.builder.clean_disk" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">clean_disk</span><span class="p">(</span><span class="n">branch_workdir</span><span class="p">)</span></code>
+
+
+</h3>
+
+    <div class="doc doc-contents ">
+
+      <p>Remove a branch directory on the disk to save some space</p>
+
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>branch_workdir</code></td>
+        <td><code>Path</code></td>
+        <td><p>Path to the directory to remove</p></td>
+        <td><em>required</em></td>
+      </tr>
+  </tbody>
+</table>
+        <details class="quote">
+          <summary>Source code in <code>bgraph/builder/builder.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">clean_disk</span><span class="p">(</span><span class="n">branch_workdir</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Remove a branch directory on the disk to save some space</span>
+
+<span class="sd">    :param branch_workdir: Path to the directory to remove</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">branch_workdir</span><span class="o">.</span><span class="n">is_dir</span><span class="p">():</span>
+        <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">branch_workdir</span><span class="p">,</span> <span class="n">ignore_errors</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-function">
+
+
+
+<h3 id="bgraph.builder.builder.combine_files_path" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">combine_files_path</span><span class="p">(</span><span class="n">branch_dir</span><span class="p">)</span></code>
+
+
+</h3>
+
+    <div class="doc doc-contents ">
+
+      <p>Load the "files.pickle" stored with results of git commands.</p>
+
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>branch_dir</code></td>
+        <td><code>Path</code></td>
+        <td><p>Directory to find the AOSP partial tree</p></td>
+        <td><em>required</em></td>
+      </tr>
+  </tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>Dict[pathlib.Path, List[str]]</code></td>
+      <td><p>A mapping of path and the list of files inside the project</p></td>
+    </tr>
+  </tbody>
+</table>
+        <details class="quote">
+          <summary>Source code in <code>bgraph/builder/builder.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">combine_files_path</span><span class="p">(</span><span class="n">branch_dir</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
+    <span class="sd">&quot;&quot;&quot;Load the &quot;files.pickle&quot; stored with results of git commands.</span>
+
+<span class="sd">    :param branch_dir: Directory to find the AOSP partial tree</span>
+<span class="sd">    :return: A mapping of path and the list of files inside the project</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">files</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">file_path</span> <span class="ow">in</span> <span class="n">branch_dir</span><span class="o">.</span><span class="n">rglob</span><span class="p">(</span><span class="s2">&quot;files.pickle&quot;</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">local_files</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">))</span>
+        <span class="k">except</span> <span class="n">pickle</span><span class="o">.</span><span class="n">PickleError</span><span class="p">:</span>
+            <span class="k">continue</span>
+
+        <span class="n">files</span><span class="p">[</span><span class="n">file_path</span><span class="o">.</span><span class="n">parent</span><span class="p">]</span> <span class="o">=</span> <span class="n">local_files</span>
+
+    <span class="k">return</span> <span class="n">files</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-function">
+
+
+
+<h3 id="bgraph.builder.builder.compose_all" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">compose_all</span><span class="p">(</span><span class="n">mirror</span><span class="p">,</span> <span class="n">branch_pattern</span><span class="o">=</span><span class="s1">&#39;android-*&#39;</span><span class="p">,</span> <span class="n">work_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">force</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></code>
+
+
+</h3>
+
+    <div class="doc doc-contents ">
+
+      <p>Iterates through all the branches in AOSP and create the source maps.</p>
+<p>This methods:
+    - list all the existing branches and filter those matching the pattern
+    - does a partial checkout of each of them
+    - parses the Soong File and store them</p>
+
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>mirror</code></td>
+        <td><code>Union[str, pathlib.Path]</code></td>
+        <td><p>Path/Link to a mirror directory or an URL.</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>branch_pattern</code></td>
+        <td><code>str</code></td>
+        <td><p>Optional. Pattern to filter branches</p></td>
+        <td><code>&#39;android-*&#39;</code></td>
+      </tr>
+      <tr>
+        <td><code>work_dir</code></td>
+        <td><code>Optional[pathlib.Path]</code></td>
+        <td><p>Optional. Work directory</p></td>
+        <td><code>None</code></td>
+      </tr>
+      <tr>
+        <td><code>force</code></td>
+        <td><code>bool</code></td>
+        <td><p>Optional. Overrides results.</p></td>
+        <td><code>False</code></td>
+      </tr>
+  </tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>Path</code></td>
+      <td><p>The path to the work directory</p></td>
+    </tr>
+  </tbody>
+</table>
+        <details class="quote">
+          <summary>Source code in <code>bgraph/builder/builder.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">compose_all</span><span class="p">(</span>
+    <span class="n">mirror</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span>
+    <span class="n">branch_pattern</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;android-*&quot;</span><span class="p">,</span>
+    <span class="n">work_dir</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">force</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Iterates through all the branches in AOSP and create the source maps.</span>
+
+<span class="sd">    This methods:</span>
+<span class="sd">        - list all the existing branches and filter those matching the pattern</span>
+<span class="sd">        - does a partial checkout of each of them</span>
+<span class="sd">        - parses the Soong File and store them</span>
+
+<span class="sd">    :param mirror: Path/Link to a mirror directory or an URL.</span>
+<span class="sd">    :param branch_pattern: Optional. Pattern to filter branches</span>
+<span class="sd">    :param work_dir: Optional. Work directory</span>
+<span class="sd">    :param force: Optional. Overrides results.</span>
+<span class="sd">    :return: The path to the work directory</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># List branches</span>
+    <span class="n">all_branches</span> <span class="o">=</span> <span class="n">get_all_branches</span><span class="p">(</span><span class="n">mirror</span><span class="p">)</span>
+    <span class="n">branches</span> <span class="o">=</span> <span class="n">fnmatch</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">all_branches</span><span class="p">,</span> <span class="n">branch_pattern</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">work_dir</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">work_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">tempfile</span><span class="o">.</span><span class="n">mkdtemp</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;bgraph_&quot;</span><span class="p">))</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Found </span><span class="si">%d</span><span class="s2"> branches&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">branches</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">branch_name</span> <span class="ow">in</span> <span class="n">branches</span><span class="p">:</span>
+        <span class="n">compose_manifest_branch</span><span class="p">(</span><span class="n">branch_name</span><span class="p">,</span> <span class="n">mirror</span><span class="p">,</span> <span class="n">work_dir</span><span class="p">,</span> <span class="n">force</span><span class="p">)</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Finished&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">work_dir</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-function">
+
+
+
+<h3 id="bgraph.builder.builder.compose_manifest_branch" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">compose_manifest_branch</span><span class="p">(</span><span class="n">branch_name</span><span class="p">,</span> <span class="n">mirror</span><span class="p">,</span> <span class="n">work_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">force</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></code>
+
+
+</h3>
+
+    <div class="doc doc-contents ">
+
+      <p>Create the soong parser for a manifest branch.</p>
+<p>As the process is slow, multiprocessing.Pool is used to speed the checkout.
+The bottleneck is the parsing of blueprints files. However, since variables
+definition must be analyzed, we cannot just randomly parallelize this step and
+it must be done carefuly (read: it's not done yet.).</p>
+<p>The SoongParser is used to parse the whole tree blueprints files and stored using
+pickle. Another step is to convert this object as a (networkx) graph.</p>
+
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>branch_name</code></td>
+        <td><code>str</code></td>
+        <td><p>Name of the branch to checkout</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>mirror</code></td>
+        <td><code>Union[str, pathlib.Path]</code></td>
+        <td><p>Path/Link towards the mirror or the manifest URL</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>work_dir</code></td>
+        <td><code>Optional[pathlib.Path]</code></td>
+        <td><p>Optional. Working directory - if not set, a temporary folder is used</p></td>
+        <td><code>None</code></td>
+      </tr>
+      <tr>
+        <td><code>force</code></td>
+        <td><code>bool</code></td>
+        <td><p>Optional. Overwrite existing branch.</p></td>
+        <td><code>False</code></td>
+      </tr>
+  </tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>Optional[pathlib.Path]</code></td>
+      <td><p>The path to the work dir</p></td>
+    </tr>
+  </tbody>
+</table>
+        <details class="quote">
+          <summary>Source code in <code>bgraph/builder/builder.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="nd">@bgraph</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">no_except</span>
+<span class="k">def</span> <span class="nf">compose_manifest_branch</span><span class="p">(</span>
+    <span class="n">branch_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">mirror</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span>
+    <span class="n">work_dir</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">force</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Path</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;Create the soong parser for a manifest branch.</span>
+
+<span class="sd">    As the process is slow, multiprocessing.Pool is used to speed the checkout.</span>
+<span class="sd">    The bottleneck is the parsing of blueprints files. However, since variables</span>
+<span class="sd">    definition must be analyzed, we cannot just randomly parallelize this step and</span>
+<span class="sd">    it must be done carefuly (read: it&#39;s not done yet.).</span>
+
+<span class="sd">    The SoongParser is used to parse the whole tree blueprints files and stored using</span>
+<span class="sd">    pickle. Another step is to convert this object as a (networkx) graph.</span>
+
+<span class="sd">    :param branch_name: Name of the branch to checkout</span>
+<span class="sd">    :param mirror: Path/Link towards the mirror or the manifest URL</span>
+<span class="sd">    :param work_dir: Optional. Working directory - if not set, a temporary folder is used</span>
+<span class="sd">    :param force: Optional. Overwrite existing branch.</span>
+<span class="sd">    :return: The path to the work dir</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Start composing for </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">branch_name</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">work_dir</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">work_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">tempfile</span><span class="o">.</span><span class="n">mkdtemp</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;bgraph_&quot;</span><span class="p">))</span>
+
+    <span class="c1"># Guard: do not redo a branch</span>
+    <span class="n">pickle_file</span> <span class="o">=</span> <span class="n">work_dir</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">branch_name</span><span class="si">}</span><span class="s2">.pickle&quot;</span>
+    <span class="k">if</span> <span class="n">pickle_file</span><span class="o">.</span><span class="n">is_file</span><span class="p">()</span> <span class="ow">and</span> <span class="n">force</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Branch already found; skip.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">work_dir</span>
+    <span class="k">elif</span> <span class="p">(</span><span class="n">work_dir</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">branch_name</span><span class="si">}</span><span class="s2">.empty&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Branch empty; skip.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">work_dir</span>
+
+    <span class="c1"># Create a branch by using repo</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">branch_dir</span> <span class="o">=</span> <span class="n">create_manifest_branch</span><span class="p">(</span><span class="n">work_dir</span><span class="p">,</span> <span class="n">mirror</span><span class="p">,</span> <span class="n">branch_name</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">bgraph</span><span class="o">.</span><span class="n">exc</span><span class="o">.</span><span class="n">BGraphBuilderException</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="n">manifest_file</span> <span class="o">=</span> <span class="n">branch_dir</span> <span class="o">/</span> <span class="s2">&quot;.repo&quot;</span> <span class="o">/</span> <span class="s2">&quot;manifests&quot;</span> <span class="o">/</span> <span class="s2">&quot;default.xml&quot;</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;List projects&quot;</span><span class="p">)</span>
+    <span class="n">project_checkout_branch</span> <span class="o">=</span> <span class="n">functools</span><span class="o">.</span><span class="n">partial</span><span class="p">(</span>
+        <span class="n">project_checkout</span><span class="p">,</span> <span class="n">branch_name</span><span class="p">,</span> <span class="n">branch_dir</span><span class="p">,</span> <span class="n">mirror</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Load the manifest</span>
+    <span class="n">manifest</span> <span class="o">=</span> <span class="n">bgraph</span><span class="o">.</span><span class="n">parsers</span><span class="o">.</span><span class="n">Manifest</span><span class="o">.</span><span class="n">from_file</span><span class="p">(</span><span class="n">manifest_file</span><span class="p">)</span>
+
+    <span class="c1"># Core: multiprocessing</span>
+    <span class="k">with</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">Pool</span><span class="p">()</span> <span class="k">as</span> <span class="n">pool</span><span class="p">:</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">pool</span><span class="o">.</span><span class="n">map_async</span><span class="p">(</span><span class="n">project_checkout_branch</span><span class="p">,</span> <span class="n">manifest</span><span class="o">.</span><span class="n">get_projects</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
+        <span class="n">res</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="mi">24</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">60</span><span class="p">)</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Finished to compose with </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">branch_name</span><span class="p">)</span>
+
+    <span class="c1"># Guard: Search build files</span>
+    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">branch_dir</span><span class="o">.</span><span class="n">rglob</span><span class="p">(</span><span class="s2">&quot;Android.bp&quot;</span><span class="p">):</span>
+        <span class="k">break</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Found 0 Android.bp file, aborting&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Create an empty file to prevent from doing it if we restart</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">work_dir</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">branch_name</span><span class="si">}</span><span class="s2">.empty&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">_</span><span class="p">:</span>
+            <span class="k">pass</span>
+
+        <span class="n">clean_disk</span><span class="p">(</span><span class="n">branch_dir</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">work_dir</span>
+
+    <span class="n">soong_parser</span> <span class="o">=</span> <span class="n">bgraph</span><span class="o">.</span><span class="n">parsers</span><span class="o">.</span><span class="n">SoongParser</span><span class="p">()</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Starting parsing AOSP build files&quot;</span><span class="p">)</span>
+    <span class="n">soong_parser</span><span class="o">.</span><span class="n">parse_aosp</span><span class="p">(</span><span class="n">branch_dir</span><span class="p">,</span> <span class="n">project_map</span><span class="o">=</span><span class="n">manifest</span><span class="o">.</span><span class="n">get_projects</span><span class="p">())</span>
+    <span class="n">soong_parser</span><span class="o">.</span><span class="n">file_listing</span> <span class="o">=</span> <span class="n">combine_files_path</span><span class="p">(</span><span class="n">branch_dir</span><span class="p">)</span>
+
+    <span class="c1"># Save the result</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">soong_parser</span><span class="p">,</span> <span class="nb">open</span><span class="p">(</span><span class="n">pickle_file</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">))</span>
+    <span class="k">except</span> <span class="n">pickle</span><span class="o">.</span><span class="n">PickleError</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Failed to pickle&quot;</span><span class="p">)</span>
+        <span class="n">clean_disk</span><span class="p">(</span><span class="n">branch_dir</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">work_dir</span>
+
+    <span class="c1"># Clean the disk</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Clean branch&quot;</span><span class="p">)</span>
+    <span class="n">clean_disk</span><span class="p">(</span><span class="n">branch_dir</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">work_dir</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-function">
+
+
+
+<h3 id="bgraph.builder.builder.create_manifest_branch" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">create_manifest_branch</span><span class="p">(</span><span class="n">root_dir</span><span class="p">,</span> <span class="n">mirror</span><span class="p">,</span> <span class="n">branch_name</span><span class="p">)</span></code>
+
+
+</h3>
+
+    <div class="doc doc-contents ">
+
+      <p>Create a manifest branch in the root_dir with the manifest branch as name.</p>
+
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>root_dir</code></td>
+        <td><code>Path</code></td>
+        <td><p>Where to download the branch</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>mirror</code></td>
+        <td><code>Union[str, pathlib.Path]</code></td>
+        <td><p>Path/Link to the mirror directory or manifest URL</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>branch_name</code></td>
+        <td><code>str</code></td>
+        <td><p>Name of the branch to checkout</p></td>
+        <td><em>required</em></td>
+      </tr>
+  </tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>Path</code></td>
+      <td><p>A path towards the branch work directory</p></td>
+    </tr>
+  </tbody>
+</table>
+        <details class="quote">
+          <summary>Source code in <code>bgraph/builder/builder.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">create_manifest_branch</span><span class="p">(</span>
+    <span class="n">root_dir</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">mirror</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span> <span class="n">branch_name</span><span class="p">:</span> <span class="nb">str</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Create a manifest branch in the root_dir with the manifest branch as name.</span>
+
+<span class="sd">    :param root_dir: Where to download the branch</span>
+<span class="sd">    :param mirror: Path/Link to the mirror directory or manifest URL</span>
+<span class="sd">    :param branch_name: Name of the branch to checkout</span>
+<span class="sd">    :raises BGraphBuilderException if repo command is not found</span>
+<span class="sd">    :return: A path towards the branch work directory</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">branch_dir</span> <span class="o">=</span> <span class="n">root_dir</span> <span class="o">/</span> <span class="n">branch_name</span>
+    <span class="n">branch_dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="c1"># Init mirror</span>
+    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">mirror</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="c1"># If it is a remote url</span>
+        <span class="n">manifest</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">mirror</span><span class="si">}</span><span class="s2">/platform/manifest&quot;</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mirror</span><span class="p">,</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">):</span>
+        <span class="n">manifest</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">mirror</span> <span class="o">/</span> <span class="s2">&quot;platform&quot;</span> <span class="o">/</span> <span class="s2">&quot;manifest.git&quot;</span><span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">repo</span> <span class="o">=</span> <span class="n">sh</span><span class="o">.</span><span class="n">Command</span><span class="p">(</span><span class="s2">&quot;repo&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">bake</span><span class="p">(</span><span class="s2">&quot;--color=never&quot;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">sh</span><span class="o">.</span><span class="n">CommandNotFound</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Did not find repo command. Is it in PATH?&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="n">bgraph</span><span class="o">.</span><span class="n">exc</span><span class="o">.</span><span class="n">BGraphBuilderException</span><span class="p">(</span><span class="s2">&quot;Repo not found.&quot;</span><span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">repo</span><span class="o">.</span><span class="n">init</span><span class="p">(</span>
+            <span class="s2">&quot;-u&quot;</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">manifest</span><span class="si">!s}</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;-b&quot;</span><span class="p">,</span>
+            <span class="n">branch_name</span><span class="p">,</span>
+            <span class="s2">&quot;--partial-clone&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;--clone-filter=blob:none&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;--depth=1&quot;</span><span class="p">,</span>
+            <span class="n">_cwd</span><span class="o">=</span><span class="n">branch_dir</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="k">except</span> <span class="n">sh</span><span class="o">.</span><span class="n">ErrorReturnCode</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+            <span class="s2">&quot;Unable to init the repository for branch </span><span class="si">%s</span><span class="s2">. Verify that either the mirror&quot;</span>
+            <span class="s2">&quot;is correct or the branch exists on the target.&quot;</span><span class="p">,</span>
+            <span class="n">branch_name</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">raise</span> <span class="n">bgraph</span><span class="o">.</span><span class="n">exc</span><span class="o">.</span><span class="n">BGraphBuilderException</span><span class="p">(</span><span class="s2">&quot;Repo init failed.&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">branch_dir</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-function">
+
+
+
+<h3 id="bgraph.builder.builder.get_all_branches" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">get_all_branches</span><span class="p">(</span><span class="n">manifest</span><span class="p">,</span> <span class="n">pattern</span><span class="o">=</span><span class="s1">&#39;android-*&#39;</span><span class="p">)</span></code>
+
+
+</h3>
+
+    <div class="doc doc-contents ">
+
+      <p>Parses the list of all branches available in the mirror directory</p>
+<p>This methods works for both a local manifest directory and a remote url.</p>
+
+<p><strong>Returns:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>List[str]</code></td>
+      <td><p>A list of manifest branches</p></td>
+    </tr>
+  </tbody>
+</table>
+        <details class="quote">
+          <summary>Source code in <code>bgraph/builder/builder.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">get_all_branches</span><span class="p">(</span>
+    <span class="n">manifest</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">pattern</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;android-*&quot;</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;Parses the list of all branches available in the mirror directory</span>
+
+<span class="sd">    This methods works for both a local manifest directory and a remote url.</span>
+
+<span class="sd">    :param manifest A link or a path to the manifest</span>
+<span class="sd">    :param pattern A pattern to match tags in the remote directory.</span>
+<span class="sd">    :return: A list of manifest branches</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">manifest</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="n">manifest</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">manifest</span><span class="si">}</span><span class="s2">/platform/manifest&quot;</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">manifest</span><span class="p">,</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">):</span>
+        <span class="n">manifest</span> <span class="o">=</span> <span class="n">manifest</span> <span class="o">/</span> <span class="s2">&quot;platform&quot;</span> <span class="o">/</span> <span class="s2">&quot;manifest.git&quot;</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">tags</span> <span class="o">=</span> <span class="n">sh</span><span class="o">.</span><span class="n">git</span><span class="p">(</span><span class="s2">&quot;ls-remote&quot;</span><span class="p">,</span> <span class="s2">&quot;--tag&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">manifest</span><span class="si">!s}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">pattern</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">sh</span><span class="o">.</span><span class="n">ErrorReturnCode</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">bgraph</span><span class="o">.</span><span class="n">exc</span><span class="o">.</span><span class="n">BGraphManifestException</span><span class="p">(</span><span class="s2">&quot;Unable to retrieve the branches.&quot;</span><span class="p">)</span>
+
+    <span class="n">branches</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">line_encoded</span> <span class="ow">in</span> <span class="n">tags</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">splitlines</span><span class="p">():</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">_</span><span class="p">,</span> <span class="n">tag</span> <span class="o">=</span> <span class="n">line_encoded</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="k">continue</span>
+
+        <span class="k">if</span> <span class="n">tag</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;refs/tags/&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="s2">&quot;^&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">tag</span><span class="p">:</span>
+            <span class="n">branches</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tag</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="s2">&quot;refs/tags/&quot;</span><span class="p">)</span> <span class="p">:])</span>
+
+    <span class="k">return</span> <span class="n">branches</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-function">
+
+
+
+<h3 id="bgraph.builder.builder.partial_checkout" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">partial_checkout</span><span class="p">(</span><span class="n">branch_name</span><span class="p">,</span> <span class="n">project_path</span><span class="p">,</span> <span class="n">git_dir</span><span class="p">)</span></code>
+
+
+</h3>
+
+    <div class="doc doc-contents ">
+
+      <p>Performs a partial checkout using git.</p>
+<p>A partial checkout allows to checkout only interesting files and not the whole repository.
+This is a bit tricky and needs a recent git version (&gt;2.22)</p>
+
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>branch_name</code></td>
+        <td><code>str</code></td>
+        <td><p>Name of the branch</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>project_path</code></td>
+        <td><code>Path</code></td>
+        <td><p>Path where to do the checkout</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>git_dir</code></td>
+        <td><code>Union[pathlib.Path, str]</code></td>
+        <td><p>Url/Path to the git directory</p></td>
+        <td><em>required</em></td>
+      </tr>
+  </tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>bool</code></td>
+      <td><p>Boolean for success</p></td>
+    </tr>
+  </tbody>
+</table>
+        <details class="quote">
+          <summary>Source code in <code>bgraph/builder/builder.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">partial_checkout</span><span class="p">(</span>
+    <span class="n">branch_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">project_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">git_dir</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Performs a partial checkout using git.</span>
+
+<span class="sd">    A partial checkout allows to checkout only interesting files and not the whole repository.</span>
+<span class="sd">    This is a bit tricky and needs a recent git version (&gt;2.22)</span>
+
+<span class="sd">    :param branch_name: Name of the branch</span>
+<span class="sd">    :param project_path: Path where to do the checkout</span>
+<span class="sd">    :param git_dir: Url/Path to the git directory</span>
+<span class="sd">    :return: Boolean for success</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Guard to not redo the operation if the checkout has already been done</span>
+    <span class="k">if</span> <span class="n">project_path</span><span class="o">.</span><span class="n">is_dir</span><span class="p">():</span>
+        <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="n">project_path</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="c1"># Prepare the git command</span>
+    <span class="n">git</span> <span class="o">=</span> <span class="n">sh</span><span class="o">.</span><span class="n">git</span><span class="o">.</span><span class="n">bake</span><span class="p">(</span><span class="n">_cwd</span><span class="o">=</span><span class="n">project_path</span><span class="p">)</span>
+
+    <span class="c1"># Init the directory only if .git folder is not present because git init fails on already inited git directories</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">project_path</span> <span class="o">/</span> <span class="s2">&quot;.git&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">is_dir</span><span class="p">():</span>
+        <span class="n">git</span><span class="o">.</span><span class="n">init</span><span class="p">()</span>
+        <span class="n">git</span><span class="o">.</span><span class="n">remote</span><span class="p">(</span><span class="s2">&quot;add&quot;</span><span class="p">,</span> <span class="s2">&quot;origin&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">git_dir</span><span class="si">!s}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Partial fetch : without objects</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">git</span><span class="o">.</span><span class="n">fetch</span><span class="p">(</span>
+            <span class="s2">&quot;--filter=blob:none&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;--recurse-submodules=yes&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;--no-tags&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;--depth=1&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;origin&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;tag&quot;</span><span class="p">,</span>
+            <span class="n">branch_name</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="k">except</span> <span class="n">sh</span><span class="o">.</span><span class="n">ErrorReturnCode</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Unable to do the fetch part of the operation.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="c1"># Some versions of git will fails if the .git/info/sparse-checkout is already there</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">git</span><span class="p">(</span><span class="s2">&quot;sparse-checkout&quot;</span><span class="p">,</span> <span class="s2">&quot;init&quot;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">sh</span><span class="o">.</span><span class="n">ErrorReturnCode</span><span class="p">:</span>
+        <span class="k">pass</span>
+
+    <span class="c1"># Sparse checkout magic</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">git</span><span class="p">(</span><span class="s2">&quot;sparse-checkout&quot;</span><span class="p">,</span> <span class="s2">&quot;set&quot;</span><span class="p">,</span> <span class="s2">&quot;**/*.bp&quot;</span><span class="p">)</span>
+        <span class="n">git</span><span class="p">(</span><span class="s2">&quot;sparse-checkout&quot;</span><span class="p">,</span> <span class="s2">&quot;reapply&quot;</span><span class="p">)</span>
+        <span class="n">git</span><span class="o">.</span><span class="n">checkout</span><span class="p">(</span><span class="s2">&quot;--quiet&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;refs/tags/</span><span class="si">{</span><span class="n">branch_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">sh</span><span class="o">.</span><span class="n">ErrorReturnCode</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Unable to perform sparse-checkout magic.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="c1"># List all the files of the project (without downloading them)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">git</span><span class="p">(</span><span class="s2">&quot;ls-tree&quot;</span><span class="p">,</span> <span class="s2">&quot;-r&quot;</span><span class="p">,</span> <span class="s2">&quot;--name-only&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">branch_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">files</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+    <span class="k">except</span> <span class="n">sh</span><span class="o">.</span><span class="n">ErrorReturnCode</span><span class="p">:</span>
+        <span class="n">files</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="c1"># We will need the list of files afterwards so store it</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">files</span><span class="p">,</span> <span class="nb">open</span><span class="p">(</span><span class="n">project_path</span> <span class="o">/</span> <span class="s2">&quot;files.pickle&quot;</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">))</span>
+    <span class="k">except</span> <span class="n">pickle</span><span class="o">.</span><span class="n">PickleError</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Unable to dump the list of files in the pickle-file.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="c1"># Save local space: delete git folder</span>
+    <span class="n">local_dir</span> <span class="o">=</span> <span class="n">project_path</span> <span class="o">/</span> <span class="s2">&quot;.git&quot;</span>
+    <span class="k">if</span> <span class="n">local_dir</span><span class="o">.</span><span class="n">is_dir</span><span class="p">():</span>
+        <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">local_dir</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="kc">True</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-function">
+
+
+
+<h3 id="bgraph.builder.builder.project_checkout" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">project_checkout</span><span class="p">(</span><span class="n">branch_name</span><span class="p">,</span> <span class="n">branch_dir</span><span class="p">,</span> <span class="n">mirror</span><span class="p">,</span> <span class="n">paths</span><span class="p">)</span></code>
+
+
+</h3>
+
+    <div class="doc doc-contents ">
+
+      <p>Perform a project checkout.</p>
+<p>The project name is where a project is found in the mirror (e.g. MIRROR/platform/external/sqlite)
+The relative project path is the final path of the project in AOSP (e.g. ROOT/external/sqlite)</p>
+<p>Abort fast if no git directory is found in the mirror</p>
+
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>branch_name</code></td>
+        <td><code>str</code></td>
+        <td><p>Name of the branch to checkout</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>branch_dir</code></td>
+        <td><code>Path</code></td>
+        <td><p>Branch working directory</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>mirror</code></td>
+        <td><code>Union[str, pathlib.Path]</code></td>
+        <td><p>Path/Link to a mirror</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>paths</code></td>
+        <td><code>Tuple[pathlib.Path, pathlib.Path]</code></td>
+        <td><p>Project Name and project relative path</p></td>
+        <td><em>required</em></td>
+      </tr>
+  </tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>None</code></td>
+      <td></td>
+    </tr>
+  </tbody>
+</table>
+        <details class="quote">
+          <summary>Source code in <code>bgraph/builder/builder.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="nd">@bgraph</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">no_except</span>
+<span class="k">def</span> <span class="nf">project_checkout</span><span class="p">(</span>
+    <span class="n">branch_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">branch_dir</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span>
+    <span class="n">mirror</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span>
+    <span class="n">paths</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Perform a project checkout.</span>
+
+<span class="sd">    The project name is where a project is found in the mirror (e.g. MIRROR/platform/external/sqlite)</span>
+<span class="sd">    The relative project path is the final path of the project in AOSP (e.g. ROOT/external/sqlite)</span>
+
+<span class="sd">    Abort fast if no git directory is found in the mirror</span>
+
+<span class="sd">    :param branch_name: Name of the branch to checkout</span>
+<span class="sd">    :param branch_dir: Branch working directory</span>
+<span class="sd">    :param mirror: Path/Link to a mirror</span>
+<span class="sd">    :param paths: Project Name and project relative path</span>
+<span class="sd">    :return:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">project_name</span><span class="p">,</span> <span class="n">relative_project_path</span> <span class="o">=</span> <span class="n">paths</span>
+
+    <span class="c1"># Mirror git dir</span>
+    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">mirror</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="n">git_dir</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">mirror</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">project_name</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mirror</span><span class="p">,</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">):</span>
+        <span class="n">git_dir</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">mirror</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">project_name</span><span class="si">}</span><span class="s2">.git&quot;</span><span class="p">)</span>
+
+    <span class="c1"># AOSP project dir</span>
+    <span class="n">project_path</span> <span class="o">=</span> <span class="n">branch_dir</span> <span class="o">/</span> <span class="n">relative_project_path</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">git_dir</span><span class="p">,</span> <span class="n">Path</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">git_dir</span><span class="o">.</span><span class="n">is_dir</span><span class="p">():</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Project not found (</span><span class="si">%s</span><span class="s2">)&quot;</span><span class="p">,</span> <span class="n">git_dir</span><span class="p">)</span>
+        <span class="k">return</span>
+
+    <span class="n">partial_checkout</span><span class="p">(</span><span class="n">branch_name</span><span class="p">,</span> <span class="n">project_path</span><span class="p">,</span> <span class="n">git_dir</span><span class="p">)</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-module">
+
+
+
+<h2 id="bgraph.builder.graph" class="doc doc-heading">
+        <code>graph</code>
+
+
+
+</h2>
+
+    <div class="doc doc-contents ">
+
+      <p>Author: dm</p>
+<p>Collection of dirty scripts used to generate a source graph for AOSP based on the parsing of the Android.bp (blueprints) files.</p>
+<p>This must be used with the SoongParser developed in AOSP_BUILD project (aka acb)</p>
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+  <div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="bgraph.builder.graph.dependencies_keys" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">dependencies_keys</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span></code>
+
+
+</h3>
+
+    <div class="doc doc-contents ">
+
+      <p>In soong files, keys that indicates a source dependency</p>
+    </div>
+
+  </div>
+
+
+
+
+
+
+
+  <div class="doc doc-object doc-function">
+
+
+
+<h3 id="bgraph.builder.graph.build_source_map" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">build_source_map</span><span class="p">(</span><span class="n">sp</span><span class="p">)</span></code>
+
+
+</h3>
+
+    <div class="doc doc-contents ">
+
+      <p>From a SoongParser object, converts all the targets into a graph representation where
+the links between two nodes are :
+    - a dependency link if the origin is induced in the destination
+    - a source link if the origin is a source file and the destination a target</p>
+<p>The graphs are saved as networkx objects with pickle.</p>
+
+<p><strong>Returns:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>DiGraph</code></td>
+      <td><p>An UDG as a DiGraph</p></td>
+    </tr>
+  </tbody>
+</table>
+        <details class="quote">
+          <summary>Source code in <code>bgraph/builder/graph.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">build_source_map</span><span class="p">(</span><span class="n">sp</span><span class="p">:</span> <span class="n">bgraph</span><span class="o">.</span><span class="n">parsers</span><span class="o">.</span><span class="n">soong_parser</span><span class="o">.</span><span class="n">SoongParser</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BGraph</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    From a SoongParser object, converts all the targets into a graph representation where</span>
+<span class="sd">    the links between two nodes are :</span>
+<span class="sd">        - a dependency link if the origin is induced in the destination</span>
+<span class="sd">        - a source link if the origin is a source file and the destination a target</span>
+
+<span class="sd">    The graphs are saved as networkx objects with pickle.</span>
+
+<span class="sd">    :param: sp: The soong parser</span>
+<span class="sd">    :return: An UDG as a DiGraph</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">graph</span><span class="p">:</span> <span class="n">BGraph</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">DiGraph</span><span class="p">()</span>
+
+    <span class="k">for</span> <span class="n">target</span> <span class="ow">in</span> <span class="n">sp</span><span class="o">.</span><span class="n">sections</span><span class="p">:</span>
+        <span class="n">graph</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">sp</span><span class="o">.</span><span class="n">get_section</span><span class="p">(</span><span class="n">target</span><span class="p">))</span>
+
+    <span class="n">file_listing</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">file_listing</span>
+
+    <span class="n">section_files</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="n">nodes</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">section_name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">nodes</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">idx</span> <span class="o">%</span> <span class="mi">500</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Converting section </span><span class="si">%d</span><span class="s2"> / </span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">idx</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">nodes</span><span class="p">))</span>
+
+        <span class="k">for</span> <span class="n">section</span> <span class="ow">in</span> <span class="n">graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">section_name</span><span class="p">][</span><span class="s2">&quot;data&quot;</span><span class="p">]:</span>
+
+            <span class="n">project_path</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="n">section</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                <span class="n">bgraph</span><span class="o">.</span><span class="n">parsers</span><span class="o">.</span><span class="n">soong_parser</span><span class="o">.</span><span class="n">SoongParser</span><span class="o">.</span><span class="n">SECTION_PROJECT_PATH</span>
+            <span class="p">)</span>
+            <span class="n">project_files</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">file_listing</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">project_path</span><span class="p">,</span> <span class="p">[])</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">project_files</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cannot find files for project </span><span class="si">{</span><span class="n">section_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+            <span class="n">convert_section</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">section_files</span><span class="p">,</span> <span class="n">section_name</span><span class="p">,</span> <span class="n">section</span><span class="p">,</span> <span class="n">project_files</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">graph</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-function">
+
+
+
+<h3 id="bgraph.builder.graph.compute_file_list" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">compute_file_list</span><span class="p">(</span><span class="n">section_files</span><span class="p">,</span> <span class="n">soong_file</span><span class="p">,</span> <span class="n">project_path</span><span class="p">,</span> <span class="n">files</span><span class="p">)</span></code>
+
+
+</h3>
+
+    <div class="doc doc-contents ">
+
+      <p>Create the file list that matches the soong_file for the project.</p>
+<p>WARNING: This function is <em>not</em> pure, it will modify in-place the section_files
+mapping, allowing for an easy caching.</p>
+
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>section_files</code></td>
+        <td><code>Dict[pathlib.Path, List[str]]</code></td>
+        <td><p>A mapping storing the files mapping</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>soong_file</code></td>
+        <td><code>Path</code></td>
+        <td><p>Path for a soong file</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>project_path</code></td>
+        <td><code>Path</code></td>
+        <td><p>Path for a project (should be a parent of the soong file)</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>files</code></td>
+        <td><code>List[str]</code></td>
+        <td><p>List of files in the project (found via Git)</p></td>
+        <td><em>required</em></td>
+      </tr>
+  </tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>List[str]</code></td>
+      <td><p>A list of files descendent of the soong file in the project</p></td>
+    </tr>
+  </tbody>
+</table>
+        <details class="quote">
+          <summary>Source code in <code>bgraph/builder/graph.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">compute_file_list</span><span class="p">(</span>
+    <span class="n">section_files</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span>
+    <span class="n">soong_file</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span>
+    <span class="n">project_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span>
+    <span class="n">files</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;Create the file list that matches the soong_file for the project.</span>
+
+<span class="sd">    WARNING: This function is *not* pure, it will modify in-place the section_files</span>
+<span class="sd">    mapping, allowing for an easy caching.</span>
+
+<span class="sd">    :param section_files: A mapping storing the files mapping</span>
+<span class="sd">    :param soong_file: Path for a soong file</span>
+<span class="sd">    :param project_path: Path for a project (should be a parent of the soong file)</span>
+<span class="sd">    :param files: List of files in the project (found via Git)</span>
+<span class="sd">    :return: A list of files descendent of the soong file in the project</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">soong_file</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">section_files</span><span class="p">:</span>
+
+        <span class="n">section_files</span><span class="p">[</span><span class="n">soong_file</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
+            <span class="n">full_path</span> <span class="o">=</span> <span class="n">project_path</span> <span class="o">/</span> <span class="n">file</span>
+            <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">full_path</span><span class="p">)</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">soong_file</span><span class="p">)):</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">section_files</span><span class="p">[</span><span class="n">soong_file</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                        <span class="n">full_path</span><span class="o">.</span><span class="n">relative_to</span><span class="p">(</span><span class="n">soong_file</span><span class="p">)</span><span class="o">.</span><span class="n">as_posix</span><span class="p">()</span>
+                    <span class="p">)</span>
+                <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                    <span class="k">pass</span>
+
+    <span class="k">return</span> <span class="n">section_files</span><span class="p">[</span><span class="n">soong_file</span><span class="p">]</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-function">
+
+
+
+<h3 id="bgraph.builder.graph.convert" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">convert</span><span class="p">(</span><span class="n">pickle_dir</span><span class="p">,</span> <span class="n">result_dir</span><span class="p">)</span></code>
+
+
+</h3>
+
+    <div class="doc doc-contents ">
+
+      <p>Iterates through the source_maps directory and convert every soong_parser objects
+to a NetworkX DiGraph</p>
+
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>pickle_dir</code></td>
+        <td><code>Path</code></td>
+        <td><p>Path towards the file where the pickle files are stored.</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>result_dir</code></td>
+        <td><code>Path</code></td>
+        <td><p>Path where the BGraph are stored</p></td>
+        <td><em>required</em></td>
+      </tr>
+  </tbody>
+</table>
+        <details class="quote">
+          <summary>Source code in <code>bgraph/builder/graph.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">convert</span><span class="p">(</span><span class="n">pickle_dir</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">result_dir</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Iterates through the source_maps directory and convert every soong_parser objects</span>
+<span class="sd">    to a NetworkX DiGraph</span>
+
+<span class="sd">    :param pickle_dir: Path towards the file where the pickle files are stored.</span>
+<span class="sd">    :param result_dir: Path where the BGraph are stored</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">to_convert</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">pickle_file</span>
+        <span class="k">for</span> <span class="n">pickle_file</span> <span class="ow">in</span> <span class="n">pickle_dir</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s2">&quot;*.pickle&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">result_dir</span> <span class="o">/</span> <span class="p">(</span><span class="n">pickle_file</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s2">&quot;.bgraph&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">name</span><span class="p">))</span><span class="o">.</span><span class="n">is_file</span><span class="p">()</span>
+    <span class="p">]</span>
+    <span class="n">partial_convert_single</span> <span class="o">=</span> <span class="n">functools</span><span class="o">.</span><span class="n">partial</span><span class="p">(</span><span class="n">convert_single</span><span class="p">,</span> <span class="n">result_dir</span><span class="p">)</span>
+
+    <span class="k">with</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">Pool</span><span class="p">()</span> <span class="k">as</span> <span class="n">pool</span><span class="p">:</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">pool</span><span class="o">.</span><span class="n">map_async</span><span class="p">(</span><span class="n">partial_convert_single</span><span class="p">,</span> <span class="n">to_convert</span><span class="p">)</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+
+    <span class="n">count_success</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">branch_name</span><span class="p">,</span> <span class="n">result</span> <span class="ow">in</span> <span class="n">results</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Fail to convert </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">branch_name</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">count_success</span> <span class="o">+=</span> <span class="mi">1</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Converted </span><span class="si">%d</span><span class="s2">/</span><span class="si">%d</span><span class="s2"> branches&quot;</span><span class="p">,</span> <span class="n">count_success</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">))</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-function">
+
+
+
+<h3 id="bgraph.builder.graph.convert_section" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">convert_section</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">section_files</span><span class="p">,</span> <span class="n">section_name</span><span class="p">,</span> <span class="n">section</span><span class="p">,</span> <span class="n">project_files</span><span class="p">)</span></code>
+
+
+</h3>
+
+    <div class="doc doc-contents ">
+
+      <p>Convert a section from the SoongParser into a node in the graph and sets its
+dependencies</p>
+<p>Warning: This functions modifies in place the graph.</p>
+<p>Note: Some refactoring should be done on the file path detection (drop fnmatch).</p>
+<p>TODO(dm):
+    Integrate other type of dependencies such as exclusion</p>
+
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>graph</code></td>
+        <td><code>DiGraph</code></td>
+        <td><p>The UDG</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>section_files</code></td>
+        <td><code>Dict[pathlib.Path, List[str]]</code></td>
+        <td><p>A mapping for section files allowing an easy cache</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>section_name</code></td>
+        <td><code>str</code></td>
+        <td><p>Name of the section to convert</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>section</code></td>
+        <td><code>Section</code></td>
+        <td><p>Section data in iteself</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>project_files</code></td>
+        <td><code>List[str]</code></td>
+        <td><p>Files found in the source tree</p></td>
+        <td><em>required</em></td>
+      </tr>
+  </tbody>
+</table>
+        <details class="quote">
+          <summary>Source code in <code>bgraph/builder/graph.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">convert_section</span><span class="p">(</span>
+    <span class="n">graph</span><span class="p">:</span> <span class="n">BGraph</span><span class="p">,</span>
+    <span class="n">section_files</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span>
+    <span class="n">section_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">section</span><span class="p">:</span> <span class="n">Section</span><span class="p">,</span>
+    <span class="n">project_files</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Convert a section from the SoongParser into a node in the graph and sets its</span>
+<span class="sd">    dependencies</span>
+
+<span class="sd">    Warning: This functions modifies in place the graph.</span>
+
+<span class="sd">    Note: Some refactoring should be done on the file path detection (drop fnmatch).</span>
+
+<span class="sd">    TODO(dm):</span>
+<span class="sd">        Integrate other type of dependencies such as exclusion</span>
+
+<span class="sd">    :param graph: The UDG</span>
+<span class="sd">    :param section_files: A mapping for section files allowing an easy cache</span>
+<span class="sd">    :param section_name: Name of the section to convert</span>
+<span class="sd">    :param section: Section data in iteself</span>
+<span class="sd">    :param project_files: Files found in the source tree</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Project Path</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">project_path</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="n">section</span><span class="p">[</span>
+            <span class="n">bgraph</span><span class="o">.</span><span class="n">parsers</span><span class="o">.</span><span class="n">soong_parser</span><span class="o">.</span><span class="n">SoongParser</span><span class="o">.</span><span class="n">SECTION_PROJECT_PATH</span>
+        <span class="p">]</span>
+    <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Missing section_project_path in </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">section_name</span><span class="p">)</span>
+        <span class="k">return</span>
+
+    <span class="c1"># Local Soong files</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">soong_file_path</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="n">section</span><span class="p">[</span>
+            <span class="n">bgraph</span><span class="o">.</span><span class="n">parsers</span><span class="o">.</span><span class="n">soong_parser</span><span class="o">.</span><span class="n">SoongParser</span><span class="o">.</span><span class="n">SOONG_FILE</span>
+        <span class="p">]</span><span class="o">.</span><span class="n">parent</span>
+    <span class="k">except</span> <span class="p">(</span><span class="ne">KeyError</span><span class="p">,</span> <span class="ne">AttributeError</span><span class="p">):</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Missing soong_file in </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">section_name</span><span class="p">)</span>
+        <span class="k">return</span>
+
+    <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">bgraph</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">recurse</span><span class="p">(</span><span class="n">section</span><span class="p">):</span>  <span class="c1"># type: ignore</span>
+        <span class="n">edge_type</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;dep&quot;</span><span class="p">,</span> <span class="s2">&quot;src&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">dependencies_keys</span><span class="p">:</span>
+            <span class="n">edge_type</span> <span class="o">=</span> <span class="s2">&quot;dep&quot;</span>
+
+        <span class="k">elif</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">srcs_keys</span><span class="p">:</span>
+            <span class="n">edge_type</span> <span class="o">=</span> <span class="s2">&quot;src&quot;</span>
+
+        <span class="k">if</span> <span class="n">edge_type</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">dep</span> <span class="ow">in</span> <span class="n">value</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">edge_type</span> <span class="o">==</span> <span class="s2">&quot;src&quot;</span><span class="p">:</span>
+
+                    <span class="c1"># For dependency key representing directories, add a *</span>
+                    <span class="k">if</span> <span class="s2">&quot;dirs&quot;</span> <span class="ow">in</span> <span class="n">key</span><span class="p">:</span>
+                        <span class="n">dep</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">dep</span><span class="si">}</span><span class="s2">*&quot;</span>
+
+                    <span class="c1"># Since we are using fnmatch and not a proper tool, we also</span>
+                    <span class="c1"># must take care of those prefix and remove them...</span>
+                    <span class="c1"># TODO(dm): Use removeprefix in Python3.9</span>
+                    <span class="k">for</span> <span class="n">prefix</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;./&quot;</span><span class="p">,</span> <span class="s2">&quot;.&quot;</span><span class="p">]:</span>
+                        <span class="k">if</span> <span class="n">dep</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">prefix</span><span class="p">):</span>
+                            <span class="n">dep</span> <span class="o">=</span> <span class="n">dep</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">prefix</span><span class="p">)</span> <span class="p">:]</span>
+                            <span class="k">break</span>
+
+                    <span class="c1"># Resolve * in dependencies files : the pattern must be</span>
+                    <span class="c1"># modified to accomodate Python fnmatch module</span>
+                    <span class="c1"># FIX: https://android.googlesource.com/platform/build/soong/+/refs/heads/master#file-lists</span>
+
+                    <span class="k">for</span> <span class="n">dependency_file</span> <span class="ow">in</span> <span class="n">fnmatch</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+                        <span class="n">compute_file_list</span><span class="p">(</span>
+                            <span class="n">section_files</span><span class="p">,</span> <span class="n">soong_file_path</span><span class="p">,</span> <span class="n">project_path</span><span class="p">,</span> <span class="n">project_files</span>
+                        <span class="p">),</span>
+                        <span class="n">dep</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;**/&quot;</span><span class="p">,</span> <span class="s2">&quot;*&quot;</span><span class="p">),</span>
+                    <span class="p">):</span>
+                        <span class="n">graph</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span>
+                            <span class="nb">str</span><span class="p">(</span><span class="n">soong_file_path</span> <span class="o">/</span> <span class="n">dependency_file</span><span class="p">),</span>
+                            <span class="n">section_name</span><span class="p">,</span>
+                            <span class="nb">type</span><span class="o">=</span><span class="n">edge_type</span><span class="p">,</span>
+                        <span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">graph</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">dep</span><span class="p">,</span> <span class="n">section_name</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">edge_type</span><span class="p">)</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-function">
+
+
+
+<h3 id="bgraph.builder.graph.convert_single" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">convert_single</span><span class="p">(</span><span class="n">result_dir</span><span class="p">,</span> <span class="n">pickle_file</span><span class="p">)</span></code>
+
+
+</h3>
+
+    <div class="doc doc-contents ">
+
+      <p>Convert a pickle file representing a soong parser to a graph and store it in
+result dir.</p>
+
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>result_dir</code></td>
+        <td><code>Path</code></td>
+        <td><p>Where to store the result</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>pickle_file</code></td>
+        <td><code>Path</code></td>
+        <td><p>Which file to convert</p></td>
+        <td><em>required</em></td>
+      </tr>
+  </tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>Tuple[str, bool]</code></td>
+      <td><p>A tuple (branch_name, boolean for sucess) for later statistics.</p></td>
+    </tr>
+  </tbody>
+</table>
+        <details class="quote">
+          <summary>Source code in <code>bgraph/builder/graph.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">convert_single</span><span class="p">(</span><span class="n">result_dir</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">pickle_file</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;Convert a pickle file representing a soong parser to a graph and store it in</span>
+<span class="sd">    result dir.</span>
+
+<span class="sd">    :param result_dir: Where to store the result</span>
+<span class="sd">    :param pickle_file: Which file to convert</span>
+<span class="sd">    :return: A tuple (branch_name, boolean for sucess) for later statistics.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">branch_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">pickle_file</span><span class="o">.</span><span class="n">stem</span>
+    <span class="n">bgraph_file</span> <span class="o">=</span> <span class="n">result_dir</span> <span class="o">/</span> <span class="p">(</span><span class="n">pickle_file</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s2">&quot;.bgraph&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">soong_parser</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="n">pickle_file</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">))</span>
+    <span class="k">except</span> <span class="n">pickle</span><span class="o">.</span><span class="n">PickleError</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">branch_name</span><span class="p">,</span> <span class="kc">False</span>
+
+    <span class="n">graph</span> <span class="o">=</span> <span class="n">build_source_map</span><span class="p">(</span><span class="n">soong_parser</span><span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">bgraph_file</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+            <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">file</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">pickle</span><span class="o">.</span><span class="n">PickleError</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">branch_name</span><span class="p">,</span> <span class="kc">False</span>
+
+    <span class="k">return</span> <span class="n">branch_name</span><span class="p">,</span> <span class="kc">True</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+  </div>
+
+
+
+
+  </div>
+
+    </div>
+
+  </div>
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+        
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <nav class="md-footer__inner md-grid" aria-label="Footer">
+      
+        <a href="../../../limitations/" class="md-footer__link md-footer__link--prev" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              Limitations
+            </div>
+          </div>
+        </a>
+      
+      
+        <a href="../../parsers/parsers/" class="md-footer__link md-footer__link--next" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              parsers
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+        Made with
+        <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+          Material for MkDocs
+        </a>
+        
+      </div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    <script id="__config" type="application/json">{"base": "../../..", "features": [], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing"}, "search": "../../../assets/javascripts/workers/search.d351de03.min.js", "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.a1609d9a.min.js"></script>
+      
+    
+  </body>
+</html>

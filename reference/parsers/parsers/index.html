@@ -1,0 +1,3085 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Build Graphs - Exploring AOSP Unified Depedency Graphs">
+      
+      
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-7.1.5">
+    
+    
+      
+        <title>parsers - BGraph</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.bde7dde4.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ef6f36e2.min.css">
+        
+      
+    
+    
+    
+      
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+        <style>:root{--md-text-font-family:"Roboto";--md-code-font-family:"Roboto Mono"}</style>
+      
+    
+    
+    
+      <link rel="stylesheet" href="../../../assets/_mkdocstrings.css">
+    
+    
+      
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="" data-md-color-accent="">
+  
+    
+    <script>function __prefix(e){return new URL("../../..",location).pathname+"."+e}function __get(e,t=localStorage){return JSON.parse(t.getItem(__prefix(e)))}</script>
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#bgraph.parsers" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="BGraph" class="md-header__button md-logo" aria-label="BGraph" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            BGraph
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              parsers
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+      </label>
+      
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" data-md-state="active" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </label>
+      <button type="reset" class="md-search__icon md-icon" aria-label="Clear" tabindex="-1">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        
+<a href="https://github.com/quarkslab/bgraph/" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    quarkslab/bgraph
+  </div>
+</a>
+      </div>
+    
+  </nav>
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="BGraph" class="md-nav__button md-logo" aria-label="BGraph" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
+
+    </a>
+    BGraph
+  </label>
+  
+    <div class="md-nav__source">
+      
+<a href="https://github.com/quarkslab/bgraph/" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    quarkslab/bgraph
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        Overview
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../installation/" class="md-nav__link">
+        Installation
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../docker/" class="md-nav__link">
+        Docker
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../building/" class="md-nav__link">
+        Building
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../query/" class="md-nav__link">
+        Querying
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../explanations/" class="md-nav__link">
+        Innerworkings
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../contribute/" class="md-nav__link">
+        Contribution
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../roadmap/" class="md-nav__link">
+        Roadmap
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../limitations/" class="md-nav__link">
+        Limitations
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_10" type="checkbox" id="__nav_10" checked>
+      
+      <label class="md-nav__link" for="__nav_10">
+        API Reference
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="API Reference" data-md-level="1">
+        <label class="md-nav__title" for="__nav_10">
+          <span class="md-nav__icon md-icon"></span>
+          API Reference
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../builder/builder/" class="md-nav__link">
+        builder
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          parsers
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        parsers
+      </a>
+      
+        
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#bgraph.parsers" class="md-nav__link">
+    bgraph.parsers
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bgraph.parsers.soong_parser" class="md-nav__link">
+    soong_parser
+  </a>
+  
+    <nav class="md-nav" aria-label="soong_parser">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bgraph.parsers.soong_parser.logger" class="md-nav__link">
+    logger
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bgraph.parsers.soong_parser.Manifest" class="md-nav__link">
+    Manifest
+  </a>
+  
+    <nav class="md-nav" aria-label="Manifest">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bgraph.parsers.soong_parser.Manifest.__init__" class="md-nav__link">
+    __init__()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bgraph.parsers.soong_parser.Manifest.from_file" class="md-nav__link">
+    from_file()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bgraph.parsers.soong_parser.Manifest.from_url" class="md-nav__link">
+    from_url()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bgraph.parsers.soong_parser.Manifest.get_projects" class="md-nav__link">
+    get_projects()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bgraph.parsers.soong_parser.SoongFileParser" class="md-nav__link">
+    SoongFileParser
+  </a>
+  
+    <nav class="md-nav" aria-label="SoongFileParser">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bgraph.parsers.soong_parser.SoongFileParser.__init__" class="md-nav__link">
+    __init__()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bgraph.parsers.soong_parser.SoongFileParser.parse_boolean" class="md-nav__link">
+    parse_boolean()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bgraph.parsers.soong_parser.SoongFileParser.parse_dict_def" class="md-nav__link">
+    parse_dict_def()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bgraph.parsers.soong_parser.SoongFileParser.parse_dict_field" class="md-nav__link">
+    parse_dict_field()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bgraph.parsers.soong_parser.SoongFileParser.parse_integer" class="md-nav__link">
+    parse_integer()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bgraph.parsers.soong_parser.SoongFileParser.parse_list_concat" class="md-nav__link">
+    parse_list_concat()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bgraph.parsers.soong_parser.SoongFileParser.parse_section" class="md-nav__link">
+    parse_section()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bgraph.parsers.soong_parser.SoongFileParser.parse_section_field" class="md-nav__link">
+    parse_section_field()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bgraph.parsers.soong_parser.SoongFileParser.parse_string_concat" class="md-nav__link">
+    parse_string_concat()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bgraph.parsers.soong_parser.SoongFileParser.parse_variable_def" class="md-nav__link">
+    parse_variable_def()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bgraph.parsers.soong_parser.SoongFileParser.parse_variable_ref" class="md-nav__link">
+    parse_variable_ref()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bgraph.parsers.soong_parser.SoongParser" class="md-nav__link">
+    SoongParser
+  </a>
+  
+    <nav class="md-nav" aria-label="SoongParser">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bgraph.parsers.soong_parser.SoongParser.DEFAULT_FILENAME" class="md-nav__link">
+    DEFAULT_FILENAME
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bgraph.parsers.soong_parser.SoongParser.file_listing" class="md-nav__link">
+    file_listing
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bgraph.parsers.soong_parser.SoongParser.NATIVE_TYPES" class="md-nav__link">
+    NATIVE_TYPES
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bgraph.parsers.soong_parser.SoongParser.SECTION_PROJECT" class="md-nav__link">
+    SECTION_PROJECT
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bgraph.parsers.soong_parser.SoongParser.SECTION_PROJECT_PATH" class="md-nav__link">
+    SECTION_PROJECT_PATH
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bgraph.parsers.soong_parser.SoongParser.SECTION_TYPE" class="md-nav__link">
+    SECTION_TYPE
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bgraph.parsers.soong_parser.SoongParser.SOONG_FILE" class="md-nav__link">
+    SOONG_FILE
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bgraph.parsers.soong_parser.SoongParser.__init__" class="md-nav__link">
+    __init__()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bgraph.parsers.soong_parser.SoongParser.get_section" class="md-nav__link">
+    get_section()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bgraph.parsers.soong_parser.SoongParser.get_targets" class="md-nav__link">
+    get_targets()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bgraph.parsers.soong_parser.SoongParser.list_section" class="md-nav__link">
+    list_section()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bgraph.parsers.soong_parser.SoongParser.parse_aosp" class="md-nav__link">
+    parse_aosp()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bgraph.parsers.soong_parser.SoongParser.parse_file" class="md-nav__link">
+    parse_file()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bgraph.parsers.soong_parser.SoongParser.parse_project" class="md-nav__link">
+    parse_project()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../viewer/viewer/" class="md-nav__link">
+        viewer
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/" class="md-nav__link">
+        utils
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#bgraph.parsers" class="md-nav__link">
+    bgraph.parsers
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bgraph.parsers.soong_parser" class="md-nav__link">
+    soong_parser
+  </a>
+  
+    <nav class="md-nav" aria-label="soong_parser">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bgraph.parsers.soong_parser.logger" class="md-nav__link">
+    logger
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bgraph.parsers.soong_parser.Manifest" class="md-nav__link">
+    Manifest
+  </a>
+  
+    <nav class="md-nav" aria-label="Manifest">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bgraph.parsers.soong_parser.Manifest.__init__" class="md-nav__link">
+    __init__()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bgraph.parsers.soong_parser.Manifest.from_file" class="md-nav__link">
+    from_file()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bgraph.parsers.soong_parser.Manifest.from_url" class="md-nav__link">
+    from_url()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bgraph.parsers.soong_parser.Manifest.get_projects" class="md-nav__link">
+    get_projects()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bgraph.parsers.soong_parser.SoongFileParser" class="md-nav__link">
+    SoongFileParser
+  </a>
+  
+    <nav class="md-nav" aria-label="SoongFileParser">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bgraph.parsers.soong_parser.SoongFileParser.__init__" class="md-nav__link">
+    __init__()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bgraph.parsers.soong_parser.SoongFileParser.parse_boolean" class="md-nav__link">
+    parse_boolean()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bgraph.parsers.soong_parser.SoongFileParser.parse_dict_def" class="md-nav__link">
+    parse_dict_def()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bgraph.parsers.soong_parser.SoongFileParser.parse_dict_field" class="md-nav__link">
+    parse_dict_field()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bgraph.parsers.soong_parser.SoongFileParser.parse_integer" class="md-nav__link">
+    parse_integer()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bgraph.parsers.soong_parser.SoongFileParser.parse_list_concat" class="md-nav__link">
+    parse_list_concat()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bgraph.parsers.soong_parser.SoongFileParser.parse_section" class="md-nav__link">
+    parse_section()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bgraph.parsers.soong_parser.SoongFileParser.parse_section_field" class="md-nav__link">
+    parse_section_field()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bgraph.parsers.soong_parser.SoongFileParser.parse_string_concat" class="md-nav__link">
+    parse_string_concat()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bgraph.parsers.soong_parser.SoongFileParser.parse_variable_def" class="md-nav__link">
+    parse_variable_def()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bgraph.parsers.soong_parser.SoongFileParser.parse_variable_ref" class="md-nav__link">
+    parse_variable_ref()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bgraph.parsers.soong_parser.SoongParser" class="md-nav__link">
+    SoongParser
+  </a>
+  
+    <nav class="md-nav" aria-label="SoongParser">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bgraph.parsers.soong_parser.SoongParser.DEFAULT_FILENAME" class="md-nav__link">
+    DEFAULT_FILENAME
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bgraph.parsers.soong_parser.SoongParser.file_listing" class="md-nav__link">
+    file_listing
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bgraph.parsers.soong_parser.SoongParser.NATIVE_TYPES" class="md-nav__link">
+    NATIVE_TYPES
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bgraph.parsers.soong_parser.SoongParser.SECTION_PROJECT" class="md-nav__link">
+    SECTION_PROJECT
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bgraph.parsers.soong_parser.SoongParser.SECTION_PROJECT_PATH" class="md-nav__link">
+    SECTION_PROJECT_PATH
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bgraph.parsers.soong_parser.SoongParser.SECTION_TYPE" class="md-nav__link">
+    SECTION_TYPE
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bgraph.parsers.soong_parser.SoongParser.SOONG_FILE" class="md-nav__link">
+    SOONG_FILE
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bgraph.parsers.soong_parser.SoongParser.__init__" class="md-nav__link">
+    __init__()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bgraph.parsers.soong_parser.SoongParser.get_section" class="md-nav__link">
+    get_section()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bgraph.parsers.soong_parser.SoongParser.get_targets" class="md-nav__link">
+    get_targets()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bgraph.parsers.soong_parser.SoongParser.list_section" class="md-nav__link">
+    list_section()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bgraph.parsers.soong_parser.SoongParser.parse_aosp" class="md-nav__link">
+    parse_aosp()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bgraph.parsers.soong_parser.SoongParser.parse_file" class="md-nav__link">
+    parse_file()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bgraph.parsers.soong_parser.SoongParser.parse_project" class="md-nav__link">
+    parse_project()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content" data-md-component="content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                  <a href="https://github.com/quarkslab/bgraph/edit/master/docs/reference/parsers/parsers.md" title="Edit this page" class="md-content__button md-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25z"/></svg>
+                  </a>
+                
+                
+                  <h1>parsers</h1>
+                
+                <div class="doc doc-object doc-module">
+
+<a id="bgraph.parsers"></a>
+    <div class="doc doc-contents first">
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+  <div class="doc doc-object doc-module">
+
+
+
+<h2 id="bgraph.parsers.soong_parser" class="doc doc-heading">
+        <code>soong_parser</code>
+
+
+
+</h2>
+
+    <div class="doc doc-contents ">
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+  <div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="bgraph.parsers.soong_parser.logger" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">logger</span><span class="p">:</span> <span class="n">Logger</span></code>
+
+
+</h3>
+
+    <div class="doc doc-contents ">
+
+      <p>Logger.</p>
+    </div>
+
+  </div>
+
+
+
+
+  <div class="doc doc-object doc-class">
+
+
+
+<h3 id="bgraph.parsers.soong_parser.Manifest" class="doc doc-heading">
+        <code>Manifest</code>
+
+
+
+</h3>
+
+    <div class="doc doc-contents ">
+
+      <p>A Manifest (for AOSP) is an XML file listing all the projects used for a version of
+AOSP.</p>
+<p>The repository listing all the manifests is found at :
+https://android.googlesource.com/platform/manifest/</p>
+<p>This classes is a light wrapper around the XML File to query the parts of the
+manifest we are interested into.</p>
+
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>manifest_content</code></td>
+        <td><code></code></td>
+        <td><p>The content of a manifest</p></td>
+        <td><em>required</em></td>
+      </tr>
+  </tbody>
+</table>
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h4 id="bgraph.parsers.soong_parser.Manifest.__init__" class="doc doc-heading">
+<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">manifest_content</span><span class="p">)</span></code>
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-special"><code>special</code></small>
+  </span>
+
+</h4>
+
+    <div class="doc doc-contents ">
+
+      <p>Constructor method</p>
+
+        <details class="quote">
+          <summary>Source code in <code>bgraph/parsers/soong_parser.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">manifest_content</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Constructor method&quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">xml</span><span class="p">:</span> <span class="n">untangle</span><span class="o">.</span><span class="n">Element</span> <span class="o">=</span> <span class="n">untangle</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">manifest_content</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">xml</span><span class="o">.</span><span class="n">sax</span><span class="o">.</span><span class="n">SAXParseException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="n">bgraph</span><span class="o">.</span><span class="n">exc</span><span class="o">.</span><span class="n">BGraphManifestException</span><span class="p">(</span><span class="s2">&quot;Unable to load the manifest&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="p">(</span>
+        <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xml</span><span class="p">,</span> <span class="s2">&quot;manifest&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">False</span>
+        <span class="ow">or</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xml</span><span class="o">.</span><span class="n">manifest</span><span class="p">,</span> <span class="s2">&quot;project&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">False</span>
+    <span class="p">):</span>
+        <span class="k">raise</span> <span class="n">bgraph</span><span class="o">.</span><span class="n">exc</span><span class="o">.</span><span class="n">BGraphManifestException</span><span class="p">(</span><span class="s2">&quot;Manifest misformed&quot;</span><span class="p">)</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h4 id="bgraph.parsers.soong_parser.Manifest.from_file" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">from_file</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span></code>
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-classmethod"><code>classmethod</code></small>
+  </span>
+
+</h4>
+
+    <div class="doc doc-contents ">
+
+      <p>Load a Manifest from a file</p>
+
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>file_path</code></td>
+        <td><code>Union[str, pathlib.Path]</code></td>
+        <td><p>A PathLike object pointing to a file.</p></td>
+        <td><em>required</em></td>
+      </tr>
+  </tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>Manifest</code></td>
+      <td><p>A <code>Manifest</code> class.</p></td>
+    </tr>
+  </tbody>
+</table>
+        <details class="quote">
+          <summary>Source code in <code>bgraph/parsers/soong_parser.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="nd">@classmethod</span>
+<span class="k">def</span> <span class="nf">from_file</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">file_path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="s2">&quot;Manifest&quot;</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Load a Manifest from a file</span>
+
+<span class="sd">    :param file_path: A PathLike object pointing to a file.</span>
+<span class="sd">    :return: A `Manifest` class.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">file_path</span> <span class="o">=</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">file_path</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">manifest_content</span><span class="o">=</span><span class="n">file_path</span><span class="o">.</span><span class="n">as_posix</span><span class="p">())</span>
+
+    <span class="k">raise</span> <span class="n">bgraph</span><span class="o">.</span><span class="n">exc</span><span class="o">.</span><span class="n">BGraphManifestException</span><span class="p">()</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h4 id="bgraph.parsers.soong_parser.Manifest.from_url" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">from_url</span><span class="p">(</span><span class="n">manifest_name</span><span class="p">,</span> <span class="n">other_url</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-classmethod"><code>classmethod</code></small>
+  </span>
+
+</h4>
+
+    <div class="doc doc-contents ">
+
+      <p>Loads a manifest from an URL</p>
+<p>Warning: This methods parses arbitrary data from an URL. Use with caution &lt;!&gt;</p>
+<p>If the other_url parameter is set, this will be used as an absolute URL.
+Otherwise, it will fetch data from the googlesource servers.</p>
+
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>manifest_name</code></td>
+        <td><code>str</code></td>
+        <td><p>Name of the manifest</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>other_url</code></td>
+        <td><code>Optional[str]</code></td>
+        <td><p>Use this url and not the one from Google</p></td>
+        <td><code>None</code></td>
+      </tr>
+  </tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>Manifest</code></td>
+      <td><p>A <code>Manifest</code> class</p></td>
+    </tr>
+  </tbody>
+</table>
+        <details class="quote">
+          <summary>Source code in <code>bgraph/parsers/soong_parser.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="nd">@classmethod</span>
+<span class="k">def</span> <span class="nf">from_url</span><span class="p">(</span>
+    <span class="bp">cls</span><span class="p">,</span> <span class="n">manifest_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">other_url</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Manifest&quot;</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Loads a manifest from an URL</span>
+
+<span class="sd">    Warning: This methods parses arbitrary data from an URL. Use with caution &lt;!&gt;</span>
+
+<span class="sd">    If the other_url parameter is set, this will be used as an absolute URL.</span>
+<span class="sd">    Otherwise, it will fetch data from the googlesource servers.</span>
+
+<span class="sd">    :param manifest_name: Name of the manifest</span>
+<span class="sd">    :param other_url: Use this url and not the one from Google</span>
+<span class="sd">    :return: A `Manifest` class</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="kn">import</span> <span class="nn">requests</span>
+    <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">bgraph</span><span class="o">.</span><span class="n">exc</span><span class="o">.</span><span class="n">BGraphManifestException</span><span class="p">(</span>
+            <span class="s2">&quot;Must have requests installed for this action&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">other_url</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">url_content</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;https://android.googlesource.com/platform/manifest/+/refs/heads/</span><span class="si">{</span><span class="n">manifest_name</span><span class="si">}</span><span class="s2">/default.xml?format=TEXT&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">url_content</span> <span class="o">=</span> <span class="n">other_url</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url_content</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">requests</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">RequestException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">bgraph</span><span class="o">.</span><span class="n">exc</span><span class="o">.</span><span class="n">BGraphManifestException</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">xml_string</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">base64</span><span class="o">.</span><span class="n">decodebytes</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">content</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span>
+            <span class="n">response</span><span class="o">.</span><span class="n">encoding</span>
+        <span class="p">)</span>
+    <span class="k">except</span> <span class="ne">TypeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">bgraph</span><span class="o">.</span><span class="n">exc</span><span class="o">.</span><span class="n">BGraphManifestException</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">manifest_content</span><span class="o">=</span><span class="n">xml_string</span><span class="p">)</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h4 id="bgraph.parsers.soong_parser.Manifest.get_projects" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">get_projects</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></code>
+
+
+</h4>
+
+    <div class="doc doc-contents ">
+
+      <p>Returns the list of the projects for a manifest.</p>
+
+<p><strong>Returns:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>Dict[str, str]</code></td>
+      <td><p>A mapping between project name and project paths</p></td>
+    </tr>
+  </tbody>
+</table>
+        <details class="quote">
+          <summary>Source code in <code>bgraph/parsers/soong_parser.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">get_projects</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;Returns the list of the projects for a manifest.</span>
+
+<span class="sd">    :return: A mapping between project name and project paths</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">project_map</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">project</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">xml</span><span class="o">.</span><span class="n">manifest</span><span class="o">.</span><span class="n">project</span><span class="p">:</span>
+        <span class="n">project_name</span> <span class="o">=</span> <span class="n">project</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
+        <span class="n">project_path</span> <span class="o">=</span> <span class="n">project</span><span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">project_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">project_path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">project_map</span><span class="p">[</span><span class="n">project_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">project_path</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="s2">&quot;Projet </span><span class="si">%s</span><span class="s2"> (@path: </span><span class="si">%s</span><span class="s2">) is None&quot;</span><span class="p">,</span> <span class="n">project_name</span><span class="p">,</span> <span class="n">project_path</span>
+            <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">project_map</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+
+
+  </div>
+
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-class">
+
+
+
+<h3 id="bgraph.parsers.soong_parser.SoongFileParser" class="doc doc-heading">
+        <code>SoongFileParser</code>
+
+
+
+</h3>
+
+    <div class="doc doc-contents ">
+
+      <p>Parser for soong files</p>
+<p>Set and parse a soong file.
+This is a best effort parser and some edge cases are not supported.</p>
+
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>(Dict)</code></td>
+        <td><code>variables</code></td>
+        <td><p>Mapping of variables and their value inside the Blueprint file</p></td>
+        <td><em>required</em></td>
+      </tr>
+  </tbody>
+</table>
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h4 id="bgraph.parsers.soong_parser.SoongFileParser.__init__" class="doc doc-heading">
+<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">variables</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-special"><code>special</code></small>
+  </span>
+
+</h4>
+
+    <div class="doc doc-contents ">
+
+      <p>Constructor</p>
+
+        <details class="quote">
+          <summary>Source code in <code>bgraph/parsers/soong_parser.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">file_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">variables</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Constructor&quot;&quot;&quot;</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">if</span> <span class="n">variables</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">variables</span> <span class="o">=</span> <span class="n">variables</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">identifiers</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">sections</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Section</span><span class="p">]]</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">parser</span><span class="p">:</span> <span class="n">pyparsing</span><span class="o">.</span><span class="n">ParserElement</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_init_parser</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">file_path</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">parseFile</span><span class="p">(</span><span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span><span class="o">.</span><span class="n">as_posix</span><span class="p">())</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">identifiers</span> <span class="ow">or</span> <span class="ow">not</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sections</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="p">):</span>
+
+            <span class="k">raise</span> <span class="n">bgraph</span><span class="o">.</span><span class="n">exc</span><span class="o">.</span><span class="n">BGraphParserException</span><span class="p">(</span><span class="s2">&quot;An error ocured during parsing&quot;</span><span class="p">)</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h4 id="bgraph.parsers.soong_parser.SoongFileParser.parse_boolean" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">parse_boolean</span><span class="p">(</span><span class="n">tokens</span><span class="p">)</span></code>
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-staticmethod"><code>staticmethod</code></small>
+  </span>
+
+</h4>
+
+    <div class="doc doc-contents ">
+
+      <p>Helper method to parse boolean</p>
+
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>tokens</code></td>
+        <td><code>List[Any]</code></td>
+        <td><p>List of tokens</p></td>
+        <td><em>required</em></td>
+      </tr>
+  </tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>bool</code></td>
+      <td><p>A boolean</p></td>
+    </tr>
+  </tbody>
+</table>
+<p><strong>Exceptions:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>BGraphParserException</code></td>
+        <td><p>When the boolean is not true or false</p></td>
+      </tr>
+  </tbody>
+</table>
+        <details class="quote">
+          <summary>Source code in <code>bgraph/parsers/soong_parser.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="nd">@staticmethod</span>
+<span class="k">def</span> <span class="nf">parse_boolean</span><span class="p">(</span><span class="n">tokens</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Helper method to parse boolean</span>
+
+<span class="sd">    :param tokens: List of tokens</span>
+<span class="sd">    :raises BGraphParserException: When the boolean is not true or false</span>
+<span class="sd">    :return: A boolean</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">token</span> <span class="o">=</span> <span class="n">tokens</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">token</span> <span class="o">==</span> <span class="s2">&quot;true&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">True</span>
+    <span class="k">elif</span> <span class="n">token</span> <span class="o">==</span> <span class="s2">&quot;false&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">raise</span> <span class="n">bgraph</span><span class="o">.</span><span class="n">exc</span><span class="o">.</span><span class="n">BGraphParserException</span><span class="p">(</span><span class="s2">&quot;Boolean exception&quot;</span><span class="p">)</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h4 id="bgraph.parsers.soong_parser.SoongFileParser.parse_dict_def" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">parse_dict_def</span><span class="p">(</span><span class="n">tokens</span><span class="p">)</span></code>
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-staticmethod"><code>staticmethod</code></small>
+  </span>
+
+</h4>
+
+    <div class="doc doc-contents ">
+
+      <p>Helper method to parse the dict definition</p>
+
+        <details class="quote">
+          <summary>Source code in <code>bgraph/parsers/soong_parser.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="nd">@staticmethod</span>
+<span class="k">def</span> <span class="nf">parse_dict_def</span><span class="p">(</span><span class="n">tokens</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Helper method to parse the dict definition&quot;&quot;&quot;</span>
+    <span class="n">result_dict</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">token</span> <span class="ow">in</span> <span class="n">tokens</span><span class="p">:</span>
+        <span class="n">result_dict</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">result_dict</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h4 id="bgraph.parsers.soong_parser.SoongFileParser.parse_dict_field" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">parse_dict_field</span><span class="p">(</span><span class="n">tokens</span><span class="p">)</span></code>
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-staticmethod"><code>staticmethod</code></small>
+  </span>
+
+</h4>
+
+    <div class="doc doc-contents ">
+
+      <p>Helper method to parse a map</p>
+
+        <details class="quote">
+          <summary>Source code in <code>bgraph/parsers/soong_parser.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="nd">@staticmethod</span>
+<span class="k">def</span> <span class="nf">parse_dict_field</span><span class="p">(</span><span class="n">tokens</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Helper method to parse a map&quot;&quot;&quot;</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="n">tokens</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">val</span> <span class="o">=</span> <span class="n">tokens</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">tokens</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span> <span class="k">else</span> <span class="n">tokens</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+
+    <span class="k">return</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="n">val</span><span class="p">}</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h4 id="bgraph.parsers.soong_parser.SoongFileParser.parse_integer" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">parse_integer</span><span class="p">(</span><span class="n">tokens</span><span class="p">)</span></code>
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-staticmethod"><code>staticmethod</code></small>
+  </span>
+
+</h4>
+
+    <div class="doc doc-contents ">
+
+      <p>Helper method to parse integers</p>
+
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>tokens</code></td>
+        <td><code>List[str]</code></td>
+        <td><p>Tokens</p></td>
+        <td><em>required</em></td>
+      </tr>
+  </tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>int</code></td>
+      <td><p>An integer</p></td>
+    </tr>
+  </tbody>
+</table>
+        <details class="quote">
+          <summary>Source code in <code>bgraph/parsers/soong_parser.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="nd">@staticmethod</span>
+<span class="k">def</span> <span class="nf">parse_integer</span><span class="p">(</span><span class="n">tokens</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Helper method to parse integers</span>
+
+<span class="sd">    :param tokens: Tokens</span>
+<span class="sd">    :return: An integer</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">tokens</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h4 id="bgraph.parsers.soong_parser.SoongFileParser.parse_list_concat" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">parse_list_concat</span><span class="p">(</span><span class="n">tokens</span><span class="p">)</span></code>
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-staticmethod"><code>staticmethod</code></small>
+  </span>
+
+</h4>
+
+    <div class="doc doc-contents ">
+
+      <p>Helper for list concatenation</p>
+
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>tokens</code></td>
+        <td><code>List[str]</code></td>
+        <td><p>Tokens</p></td>
+        <td><em>required</em></td>
+      </tr>
+  </tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>List[Any]</code></td>
+      <td><p>A list of tokens</p></td>
+    </tr>
+  </tbody>
+</table>
+        <details class="quote">
+          <summary>Source code in <code>bgraph/parsers/soong_parser.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="nd">@staticmethod</span>
+<span class="k">def</span> <span class="nf">parse_list_concat</span><span class="p">(</span><span class="n">tokens</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;Helper for list concatenation</span>
+
+<span class="sd">    :param tokens: Tokens</span>
+<span class="sd">    :return: A list of tokens</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">final_list</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">token</span> <span class="ow">in</span> <span class="n">tokens</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">token</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">list</span><span class="p">:</span>
+            <span class="n">final_list</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">token</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">str</span><span class="p">:</span>
+            <span class="n">final_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Do not raise an exception as it may mess with pyparsing</span>
+            <span class="k">return</span> <span class="p">[]</span>
+
+    <span class="k">return</span> <span class="n">final_list</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h4 id="bgraph.parsers.soong_parser.SoongFileParser.parse_section" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">parse_section</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tokens</span><span class="p">)</span></code>
+
+
+</h4>
+
+    <div class="doc doc-contents ">
+
+      <p>Parse a section</p>
+
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>tokens</code></td>
+        <td><code>List[str]</code></td>
+        <td><p>Tokens</p></td>
+        <td><em>required</em></td>
+      </tr>
+  </tbody>
+</table>
+<p><strong>Exceptions:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>BGraphParserException</code></td>
+        <td><p>If the parsing of the section fails</p></td>
+      </tr>
+  </tbody>
+</table>
+        <details class="quote">
+          <summary>Source code in <code>bgraph/parsers/soong_parser.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">parse_section</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tokens</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Parse a section</span>
+
+<span class="sd">    :param tokens: Tokens</span>
+<span class="sd">    :raises BGraphParserException: If the parsing of the section fails</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">section_name</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">section_dict</span><span class="p">:</span> <span class="n">Section</span> <span class="o">=</span> <span class="p">{</span><span class="n">SoongParser</span><span class="o">.</span><span class="n">SECTION_TYPE</span><span class="p">:</span> <span class="n">tokens</span><span class="p">[</span><span class="mi">0</span><span class="p">]}</span>
+    <span class="k">for</span> <span class="n">token</span> <span class="ow">in</span> <span class="n">tokens</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
+        <span class="k">if</span> <span class="n">token</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">identifiers</span><span class="p">:</span>
+
+            <span class="k">if</span> <span class="n">token</span> <span class="o">==</span> <span class="s2">&quot;name&quot;</span><span class="p">:</span>
+                <span class="n">section_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">identifiers</span><span class="p">[</span><span class="n">token</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># TODO(dm) This will be resolved when we have a way to type hint a</span>
+                <span class="c1">#   dict with dynamic values</span>
+                <span class="n">section_dict</span><span class="p">[</span><span class="n">token</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">identifiers</span><span class="p">[</span><span class="n">token</span><span class="p">]</span>  <span class="c1"># type: ignore</span>
+
+            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">identifiers</span><span class="p">[</span><span class="n">token</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">bgraph</span><span class="o">.</span><span class="n">exc</span><span class="o">.</span><span class="n">BGraphParserException</span><span class="p">(</span>
+                <span class="s2">&quot;Missing key </span><span class="si">{}</span><span class="s2"> in section </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="n">section_name</span><span class="p">)</span>
+            <span class="p">)</span>
+
+    <span class="c1"># Each section *must* have a name</span>
+    <span class="k">if</span> <span class="n">section_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># Except soong_namespace ...</span>
+        <span class="k">if</span> <span class="n">section_dict</span><span class="p">[</span><span class="n">SoongParser</span><span class="o">.</span><span class="n">SECTION_TYPE</span><span class="p">]</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;soong_namespace&quot;</span><span class="p">,):</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Found a soong namespace but it is not supported yet.&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="k">raise</span> <span class="n">bgraph</span><span class="o">.</span><span class="n">exc</span><span class="o">.</span><span class="n">BGraphParserException</span><span class="p">(</span><span class="s2">&quot;Section has no attribute name&quot;</span><span class="p">)</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">sections</span><span class="p">[</span><span class="n">section_name</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">section_dict</span><span class="p">)</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h4 id="bgraph.parsers.soong_parser.SoongFileParser.parse_section_field" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">parse_section_field</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tokens</span><span class="p">)</span></code>
+
+
+</h4>
+
+    <div class="doc doc-contents ">
+
+      <p>Parse a section field</p>
+<p>Example:
+    name: "libartbase_defaults"</p>
+
+        <details class="quote">
+          <summary>Source code in <code>bgraph/parsers/soong_parser.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">parse_section_field</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tokens</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Parse a section field</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        name: &quot;libartbase_defaults&quot;</span>
+
+<span class="sd">    :return The name of the field</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">tokens</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">identifiers</span><span class="p">[</span><span class="n">tokens</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="n">tokens</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">tokens</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">identifiers</span><span class="p">[</span><span class="n">tokens</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="n">tokens</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+    <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">tokens</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="c1"># FIX: handle empty definitions like whole_static_libs: []</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">identifiers</span><span class="p">[</span><span class="n">tokens</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">return</span> <span class="n">tokens</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h4 id="bgraph.parsers.soong_parser.SoongFileParser.parse_string_concat" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">parse_string_concat</span><span class="p">(</span><span class="n">tokens</span><span class="p">)</span></code>
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-staticmethod"><code>staticmethod</code></small>
+  </span>
+
+</h4>
+
+    <div class="doc doc-contents ">
+
+      <p>Helper method to concat string together</p>
+
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>tokens</code></td>
+        <td><code>List[str]</code></td>
+        <td><p>Tokens</p></td>
+        <td><em>required</em></td>
+      </tr>
+  </tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>Optional[str]</code></td>
+      <td><p>Optionnaly a string string</p></td>
+    </tr>
+  </tbody>
+</table>
+        <details class="quote">
+          <summary>Source code in <code>bgraph/parsers/soong_parser.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="nd">@staticmethod</span>
+<span class="k">def</span> <span class="nf">parse_string_concat</span><span class="p">(</span><span class="n">tokens</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;Helper method to concat string together</span>
+
+<span class="sd">    :param tokens: Tokens</span>
+<span class="sd">    :return: Optionnaly a string string</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">final_token</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">token</span> <span class="ow">in</span> <span class="n">tokens</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">token</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">str</span><span class="p">:</span>
+            <span class="n">final_token</span> <span class="o">+=</span> <span class="n">token</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Do not raise an exception as it may mess up with pyparsing</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="k">return</span> <span class="n">final_token</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h4 id="bgraph.parsers.soong_parser.SoongFileParser.parse_variable_def" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">parse_variable_def</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">__</span><span class="p">,</span> <span class="n">tokens</span><span class="p">,</span> <span class="n">append</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></code>
+
+
+</h4>
+
+    <div class="doc doc-contents ">
+
+      <p>Helper method to parse variable definition</p>
+
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>_</code></td>
+        <td><code></code></td>
+        <td><p>N/A</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>__</code></td>
+        <td><code></code></td>
+        <td><p>N/A</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>tokens</code></td>
+        <td><code>List[Any]</code></td>
+        <td><p>Tokens to parse</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>append</code></td>
+        <td><code>bool</code></td>
+        <td><p>Should we appended the value to the existing one or not</p></td>
+        <td><code>False</code></td>
+      </tr>
+  </tbody>
+</table>
+<p><strong>Exceptions:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>BGraphParserException</code></td>
+        <td><p>When the parsing fails</p></td>
+      </tr>
+  </tbody>
+</table>
+        <details class="quote">
+          <summary>Source code in <code>bgraph/parsers/soong_parser.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">parse_variable_def</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">__</span><span class="p">,</span> <span class="n">tokens</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span> <span class="n">append</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Helper method to parse variable definition</span>
+
+<span class="sd">    :param _: N/A</span>
+<span class="sd">    :param __: N/A</span>
+<span class="sd">    :param tokens: Tokens to parse</span>
+<span class="sd">    :param append: Should we appended the value to the existing one or not</span>
+<span class="sd">    :raises BGraphParserException: When the parsing fails</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">variable_name</span> <span class="o">=</span> <span class="n">tokens</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">new_value</span> <span class="o">=</span> <span class="n">tokens</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">tokens</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span> <span class="k">else</span> <span class="n">tokens</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+    <span class="k">if</span> <span class="n">append</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+        <span class="n">old_value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">variable_name</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">old_value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">old_value</span> <span class="o">!=</span> <span class="n">new_value</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Overwritting variable - in debug, check if legit.&quot;</span><span class="p">)</span>
+            <span class="c1"># raise bgraph.exc.BGraphParserException(&quot;Conflicting variables names&quot;)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="n">variable_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_value</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">actual_value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">variable_name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">actual_value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">bgraph</span><span class="o">.</span><span class="n">exc</span><span class="o">.</span><span class="n">BGraphParserException</span><span class="p">(</span>
+                <span class="s2">&quot;Missing previous variable during append&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">new_value</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">type</span><span class="p">(</span><span class="n">actual_value</span><span class="p">):</span>
+            <span class="n">new_value</span> <span class="o">=</span> <span class="p">[</span><span class="n">new_value</span><span class="p">]</span> <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">new_value</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">str</span> <span class="k">else</span> <span class="n">new_value</span>
+            <span class="n">actual_value</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="p">[</span><span class="n">actual_value</span><span class="p">]</span> <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">actual_value</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">str</span> <span class="k">else</span> <span class="n">actual_value</span>
+            <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="n">variable_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">actual_value</span> <span class="o">+</span> <span class="n">new_value</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h4 id="bgraph.parsers.soong_parser.SoongFileParser.parse_variable_ref" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">parse_variable_ref</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tokens</span><span class="p">)</span></code>
+
+
+</h4>
+
+    <div class="doc doc-contents ">
+
+      <p>Helper method to parse variable reference</p>
+
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>tokens</code></td>
+        <td><code>List[str]</code></td>
+        <td><p>Tokens to parse</p></td>
+        <td><em>required</em></td>
+      </tr>
+  </tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>Any</code></td>
+      <td><p>The variable value</p></td>
+    </tr>
+  </tbody>
+</table>
+        <details class="quote">
+          <summary>Source code in <code>bgraph/parsers/soong_parser.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">parse_variable_ref</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tokens</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Helper method to parse variable reference</span>
+
+<span class="sd">    :param tokens: Tokens to parse</span>
+<span class="sd">    :raises: BGraphParserException When the variables is used before being defined</span>
+
+<span class="sd">    :return: The variable value</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">var_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">tokens</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">var_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">bgraph</span><span class="o">.</span><span class="n">exc</span><span class="o">.</span><span class="n">BGraphParserException</span><span class="p">(</span><span class="s2">&quot;Missing variable ref var_name&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="n">var_name</span><span class="p">]</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+
+
+  </div>
+
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-class">
+
+
+
+<h3 id="bgraph.parsers.soong_parser.SoongParser" class="doc doc-heading">
+        <code>SoongParser</code>
+
+
+
+</h3>
+
+    <div class="doc doc-contents ">
+
+      <p>Soong Parser</p>
+<p>This is the wrapper around the parser for Soong file (e.g. Android.bp)</p>
+<p>Every section will be augmented with special keys (always prefixed with soong_parser).</p>
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+  <div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="bgraph.parsers.soong_parser.SoongParser.DEFAULT_FILENAME" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">DEFAULT_FILENAME</span><span class="p">:</span> <span class="n">Final</span></code>
+
+
+</h4>
+
+    <div class="doc doc-contents ">
+
+      <p>Default name for Soong file.</p>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="bgraph.parsers.soong_parser.SoongParser.file_listing" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">file_listing</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span></code>
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-property"><code>property</code></small>
+      <small class="doc doc-property doc-property-writable"><code>writable</code></small>
+  </span>
+
+</h4>
+
+    <div class="doc doc-contents ">
+
+      <p>A map of every paths and files inside the project.
+This is used to resolve wildcards in filenames for Soong.</p>
+
+<p><strong>Returns:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>Dict[pathlib.Path, List[str]]</code></td>
+      <td><p>A maping between path and list of files inside an AOSP tree.</p></td>
+    </tr>
+  </tbody>
+</table>    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="bgraph.parsers.soong_parser.SoongParser.NATIVE_TYPES" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">NATIVE_TYPES</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span></code>
+
+
+</h4>
+
+    <div class="doc doc-contents ">
+
+      <p>Type of section considered as "natives".</p>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="bgraph.parsers.soong_parser.SoongParser.SECTION_PROJECT" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">SECTION_PROJECT</span><span class="p">:</span> <span class="n">Final</span></code>
+
+
+</h4>
+
+    <div class="doc doc-contents ">
+
+      <p>Name of the project for the current section.</p>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="bgraph.parsers.soong_parser.SoongParser.SECTION_PROJECT_PATH" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">SECTION_PROJECT_PATH</span><span class="p">:</span> <span class="n">Final</span></code>
+
+
+</h4>
+
+    <div class="doc doc-contents ">
+
+      <p>Absolute path of the project in AOSP root tree.</p>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="bgraph.parsers.soong_parser.SoongParser.SECTION_TYPE" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">SECTION_TYPE</span><span class="p">:</span> <span class="n">Final</span></code>
+
+
+</h4>
+
+    <div class="doc doc-contents ">
+
+      <p>Type of the section (e.g. cc_library).</p>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="bgraph.parsers.soong_parser.SoongParser.SOONG_FILE" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">SOONG_FILE</span><span class="p">:</span> <span class="n">Final</span></code>
+
+
+</h4>
+
+    <div class="doc doc-contents ">
+
+      <p>Absolute path of the Soong file in AOSP root tree.</p>
+    </div>
+
+  </div>
+
+
+
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h4 id="bgraph.parsers.soong_parser.SoongParser.__init__" class="doc doc-heading">
+<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></code>
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-special"><code>special</code></small>
+  </span>
+
+</h4>
+
+    <div class="doc doc-contents ">
+
+      <p>Init method.</p>
+
+        <details class="quote">
+          <summary>Source code in <code>bgraph/parsers/soong_parser.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Init method.&quot;&quot;&quot;</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">sections</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Section</span><span class="p">]]</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">_files_listing</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h4 id="bgraph.parsers.soong_parser.SoongParser.get_section" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">get_section</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">section_name</span><span class="p">,</span> <span class="n">section_type</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+
+
+</h4>
+
+    <div class="doc doc-contents ">
+
+      <p>Get a section from the project.</p>
+<p>This is the main method of the class. It will also resolve the section defaults if
+any are found. Note that the name <em>must</em> be exact.</p>
+
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>section_name</code></td>
+        <td><code>str</code></td>
+        <td><p>Name of the section</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>section_type</code></td>
+        <td><code>Optional[str]</code></td>
+        <td><p>Optional. Type of the section. If the type is defined, a single section will be returned of matching type. Otherwise all sections having the same name will be returned.</p></td>
+        <td><code>None</code></td>
+      </tr>
+  </tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>Union[List[bgraph.types.Section], bgraph.types.Section]</code></td>
+      <td><p>A (list of) sections having the name asked.</p></td>
+    </tr>
+  </tbody>
+</table>
+        <details class="quote">
+          <summary>Source code in <code>bgraph/parsers/soong_parser.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">get_section</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span> <span class="n">section_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">section_type</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Section</span><span class="p">],</span> <span class="n">Section</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;Get a section from the project.</span>
+
+<span class="sd">    This is the main method of the class. It will also resolve the section defaults if</span>
+<span class="sd">    any are found. Note that the name *must* be exact.</span>
+
+<span class="sd">    :param section_name: Name of the section</span>
+<span class="sd">    :param section_type: Optional. Type of the section. If the type is defined, a</span>
+<span class="sd">        single section will be returned of matching type. Otherwise all sections</span>
+<span class="sd">        having the same name will be returned.</span>
+<span class="sd">    :return: A (list of) sections having the name asked.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">sections</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Section</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_retrieve_section</span><span class="p">(</span><span class="n">section_name</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">section_type</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">sections</span>
+
+    <span class="k">for</span> <span class="n">section</span> <span class="ow">in</span> <span class="n">sections</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">section</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">SECTION_TYPE</span><span class="p">]</span> <span class="o">==</span> <span class="n">section_type</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">section</span>
+
+    <span class="k">raise</span> <span class="n">bgraph</span><span class="o">.</span><span class="n">exc</span><span class="o">.</span><span class="n">BGraphMissingSectionException</span><span class="p">()</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h4 id="bgraph.parsers.soong_parser.SoongParser.get_targets" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">get_targets</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></code>
+
+
+</h4>
+
+    <div class="doc doc-contents ">
+
+      <p>Compute the list of targets.</p>
+<p>A section is considered to be a target if the section_type is a binary type.
+This method is for now pretty simplist but could be improved.</p>
+<p>TODO:
+    - add target parameter to filter targets
+    - Filter also according to the value for the arch
+    - add multi arch support
+    - host/target difference</p>
+
+<p><strong>Returns:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>List[str]</code></td>
+      <td><p>A list of section having a "binary" target.</p></td>
+    </tr>
+  </tbody>
+</table>
+        <details class="quote">
+          <summary>Source code in <code>bgraph/parsers/soong_parser.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">get_targets</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;Compute the list of targets.</span>
+
+<span class="sd">    A section is considered to be a target if the section_type is a binary type.</span>
+<span class="sd">    This method is for now pretty simplist but could be improved.</span>
+
+<span class="sd">    TODO:</span>
+<span class="sd">        - add target parameter to filter targets</span>
+<span class="sd">        - Filter also according to the value for the arch</span>
+<span class="sd">        - add multi arch support</span>
+<span class="sd">        - host/target difference</span>
+
+<span class="sd">    :return: A list of section having a &quot;binary&quot; target.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">target_list</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">section_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">list_section</span><span class="p">(</span><span class="n">with_defaults</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="n">section_map</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Section</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_section</span><span class="p">(</span><span class="n">section_name</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">section</span> <span class="ow">in</span> <span class="n">section_map</span><span class="p">:</span>
+            <span class="n">section_type</span> <span class="o">=</span> <span class="n">section</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">SECTION_TYPE</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">section_type</span> <span class="ow">in</span> <span class="p">[</span>
+                <span class="s2">&quot;cc_library&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;cc_library_shared&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;cc_library_static&quot;</span><span class="p">,</span>
+            <span class="p">]:</span>
+                <span class="c1"># The target is actually the name of the section. Manual says it can</span>
+                <span class="c1"># be overriden but I did not find any evidence of that.</span>
+                <span class="c1"># TODO(dm) : see if the name if overriden &amp; check if the lib is not</span>
+                <span class="c1">#  disabled for target ? (how?)</span>
+                <span class="n">target_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">section_name</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">section_type</span> <span class="ow">in</span> <span class="p">[</span>
+                <span class="s2">&quot;cc_binary&quot;</span><span class="p">,</span>
+            <span class="p">]:</span>
+                <span class="n">target_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">section_name</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">target_list</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h4 id="bgraph.parsers.soong_parser.SoongParser.list_section" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">list_section</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">with_defaults</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></code>
+
+
+</h4>
+
+    <div class="doc doc-contents ">
+
+      <p>List sections found in AOSP.</p>
+
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>with_defaults</code></td>
+        <td><code>bool</code></td>
+        <td><p>Also include defaults sections in the results</p></td>
+        <td><code>False</code></td>
+      </tr>
+  </tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>List[str]</code></td>
+      <td><p>A list of sections</p></td>
+    </tr>
+  </tbody>
+</table>
+        <details class="quote">
+          <summary>Source code in <code>bgraph/parsers/soong_parser.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">list_section</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">with_defaults</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;List sections found in AOSP.</span>
+
+<span class="sd">    :param with_defaults: Also include defaults sections in the results</span>
+<span class="sd">    :return: A list of sections</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">section_list</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">section_name</span><span class="p">,</span> <span class="n">targets</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">sections</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">with_defaults</span> <span class="ow">or</span> <span class="nb">any</span><span class="p">(</span>
+            <span class="s2">&quot;default&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">target</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">SECTION_TYPE</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">target</span> <span class="ow">in</span> <span class="n">targets</span>
+        <span class="p">):</span>
+            <span class="n">section_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">section_name</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">section_list</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h4 id="bgraph.parsers.soong_parser.SoongParser.parse_aosp" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">parse_aosp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">aosp_directory</span><span class="p">,</span> <span class="n">file_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">project_map</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+
+
+</h4>
+
+    <div class="doc doc-contents ">
+
+      <p>Parses an AOSP tree.</p>
+<p>This methods only needs the soong file to be present so a partial checkout is
+enough to create the listing.</p>
+<p>The project map is needed because it needs to know the root tree of a project.</p>
+
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>aosp_directory</code></td>
+        <td><code>Union[str, pathlib.Path]</code></td>
+        <td><p>Root tree of AOSP</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>file_name</code></td>
+        <td><code>Optional[str]</code></td>
+        <td><p>Optional Name of file</p></td>
+        <td><code>None</code></td>
+      </tr>
+      <tr>
+        <td><code>project_map</code></td>
+        <td><code>Dict</code></td>
+        <td><p>A map of project name / project path</p></td>
+        <td><code>None</code></td>
+      </tr>
+  </tbody>
+</table>
+        <details class="quote">
+          <summary>Source code in <code>bgraph/parsers/soong_parser.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">parse_aosp</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">aosp_directory</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">],</span>
+    <span class="n">file_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">project_map</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Parses an AOSP tree.</span>
+
+<span class="sd">    This methods only needs the soong file to be present so a partial checkout is</span>
+<span class="sd">    enough to create the listing.</span>
+
+<span class="sd">    The project map is needed because it needs to know the root tree of a project.</span>
+
+<span class="sd">    :param aosp_directory: Root tree of AOSP</span>
+<span class="sd">    :param file_name: Optional Name of file</span>
+<span class="sd">    :param project_map: A map of project name / project path</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">file_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">file_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">DEFAULT_FILENAME</span>
+
+    <span class="k">if</span> <span class="n">project_map</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">bgraph</span><span class="o">.</span><span class="n">exc</span><span class="o">.</span><span class="n">BGraphParserException</span><span class="p">(</span><span class="s2">&quot;Missing project map.&quot;</span><span class="p">)</span>
+
+    <span class="n">aosp_directory</span> <span class="o">=</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">aosp_directory</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">project_name</span><span class="p">,</span> <span class="n">relative_path</span> <span class="ow">in</span> <span class="n">project_map</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">project_path</span> <span class="o">=</span> <span class="n">aosp_directory</span> <span class="o">/</span> <span class="n">relative_path</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parse_project</span><span class="p">(</span>
+            <span class="n">project_directory</span><span class="o">=</span><span class="n">project_path</span><span class="p">,</span>
+            <span class="n">file_name</span><span class="o">=</span><span class="n">file_name</span><span class="p">,</span>
+            <span class="n">project_name</span><span class="o">=</span><span class="n">project_name</span><span class="p">,</span>
+        <span class="p">)</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h4 id="bgraph.parsers.soong_parser.SoongParser.parse_file" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">parse_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">,</span> <span class="n">project_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">project_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">project_variables</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+
+
+</h4>
+
+    <div class="doc doc-contents ">
+
+      <p>Parse a file (e.g. an Android.bp) and update the current class.</p>
+<p>Note: This will silently fails if the file is misformed.</p>
+
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>file_path</code></td>
+        <td><code>Union[str, pathlib.Path]</code></td>
+        <td><p>Path towards the file</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>project_name</code></td>
+        <td><code>str</code></td>
+        <td><p>Optional. Name of the current project</p></td>
+        <td><code>None</code></td>
+      </tr>
+      <tr>
+        <td><code>project_path</code></td>
+        <td><code>Optional[pathlib.Path]</code></td>
+        <td><p>Optional. Path to the root of the project</p></td>
+        <td><code>None</code></td>
+      </tr>
+      <tr>
+        <td><code>project_variables</code></td>
+        <td><code>Dict[str, Any]</code></td>
+        <td><p>Variables already set for the project</p></td>
+        <td><code>None</code></td>
+      </tr>
+  </tbody>
+</table>
+        <details class="quote">
+          <summary>Source code in <code>bgraph/parsers/soong_parser.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">parse_file</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">file_path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">],</span>
+    <span class="n">project_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">project_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">project_variables</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Parse a file (e.g. an Android.bp) and update the current class.</span>
+
+<span class="sd">    Note: This will silently fails if the file is misformed.</span>
+
+<span class="sd">    :param file_path: Path towards the file</span>
+<span class="sd">    :param project_name: Optional. Name of the current project</span>
+<span class="sd">    :param project_path: Optional. Path to the root of the project</span>
+<span class="sd">    :param project_variables: Variables already set for the project</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">project_variables</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">project_variables</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">parser</span> <span class="o">=</span> <span class="n">SoongFileParser</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">project_variables</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">bgraph</span><span class="o">.</span><span class="n">exc</span><span class="o">.</span><span class="n">BGraphParserException</span><span class="p">:</span>
+        <span class="c1"># The parser is a best effort one. If it fails, do not try to hard but</span>
+        <span class="c1"># report the error if in DEBUG mode.</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Failed to parse </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">file_path</span><span class="p">)</span>
+        <span class="k">return</span>
+
+    <span class="c1"># If we are doing a parsing of a project, we want to store more information on</span>
+    <span class="c1"># the sections, namely where was the initial file located and the root source of</span>
+    <span class="c1"># the project. This will be handy when resolving relative paths.</span>
+    <span class="k">if</span> <span class="n">project_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">section_name</span><span class="p">,</span> <span class="n">sections</span> <span class="ow">in</span> <span class="n">parser</span><span class="o">.</span><span class="n">sections</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">section</span> <span class="ow">in</span> <span class="n">sections</span><span class="p">:</span>
+                <span class="n">section</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">SECTION_PROJECT</span><span class="p">]</span> <span class="o">=</span> <span class="n">project_name</span>
+                <span class="n">section</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">SOONG_FILE</span><span class="p">]</span> <span class="o">=</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">project_path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">section</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">SECTION_PROJECT_PATH</span><span class="p">]</span> <span class="o">=</span> <span class="n">project_path</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">sections</span><span class="p">[</span><span class="n">section_name</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">section</span><span class="p">)</span>
+
+    <span class="n">project_variables</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">parser</span><span class="o">.</span><span class="n">variables</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">parser</span><span class="o">.</span><span class="n">variables</span><span class="p">)</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h4 id="bgraph.parsers.soong_parser.SoongParser.parse_project" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">parse_project</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project_directory</span><span class="p">,</span> <span class="n">project_name</span><span class="p">,</span> <span class="n">file_name</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+
+
+</h4>
+
+    <div class="doc doc-contents ">
+
+      <p>Parse a project inside AOSP</p>
+<p>This methods expects the project to be an AOSP project (e.g. an entry in the
+manifest list of projects).</p>
+
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>project_directory</code></td>
+        <td><code>Union[str, pathlib.Path]</code></td>
+        <td><p>Path towards the project</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>project_name</code></td>
+        <td><code>str</code></td>
+        <td><p>Name of the project</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>file_name</code></td>
+        <td><code>Optional[str]</code></td>
+        <td><p>Name of the soong files</p></td>
+        <td><code>None</code></td>
+      </tr>
+  </tbody>
+</table>
+        <details class="quote">
+          <summary>Source code in <code>bgraph/parsers/soong_parser.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">parse_project</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">project_directory</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">],</span>
+    <span class="n">project_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">file_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Parse a project inside AOSP</span>
+
+<span class="sd">    This methods expects the project to be an AOSP project (e.g. an entry in the</span>
+<span class="sd">    manifest list of projects).</span>
+
+<span class="sd">    :param project_directory: Path towards the project</span>
+<span class="sd">    :param project_name: Name of the project</span>
+<span class="sd">    :param file_name: Name of the soong files</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">file_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">file_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">DEFAULT_FILENAME</span>
+
+    <span class="n">project_directory</span> <span class="o">=</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">project_directory</span><span class="p">)</span>
+    <span class="n">project_variables</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">soong_file</span> <span class="ow">in</span> <span class="n">project_directory</span><span class="o">.</span><span class="n">rglob</span><span class="p">(</span><span class="n">file_name</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parse_file</span><span class="p">(</span>
+            <span class="n">file_path</span><span class="o">=</span><span class="n">soong_file</span><span class="p">,</span>
+            <span class="n">project_name</span><span class="o">=</span><span class="n">project_name</span><span class="p">,</span>
+            <span class="n">project_path</span><span class="o">=</span><span class="n">project_directory</span><span class="p">,</span>
+            <span class="n">project_variables</span><span class="o">=</span><span class="n">project_variables</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="c1"># Sometimes in Android, a project may be have additional &quot;generic&quot; components</span>
+    <span class="c1"># We try to include also Build Files files from those directories here to handle this case</span>
+    <span class="c1"># This is a *dirty* hack and it should not be necessary when the project is from</span>
+    <span class="c1"># the manifest.</span>
+    <span class="k">for</span> <span class="n">soong_file</span> <span class="ow">in</span> <span class="p">(</span><span class="n">project_directory</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="s2">&quot;generic&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">rglob</span><span class="p">(</span><span class="n">file_name</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parse_file</span><span class="p">(</span><span class="n">file_path</span><span class="o">=</span><span class="n">soong_file</span><span class="p">)</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+
+
+  </div>
+
+    </div>
+
+  </div>
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+  </div>
+
+
+
+
+  </div>
+
+    </div>
+
+  </div>
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+        
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <nav class="md-footer__inner md-grid" aria-label="Footer">
+      
+        <a href="../../builder/builder/" class="md-footer__link md-footer__link--prev" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              builder
+            </div>
+          </div>
+        </a>
+      
+      
+        <a href="../../viewer/viewer/" class="md-footer__link md-footer__link--next" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              viewer
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+        Made with
+        <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+          Material for MkDocs
+        </a>
+        
+      </div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    <script id="__config" type="application/json">{"base": "../../..", "features": [], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing"}, "search": "../../../assets/javascripts/workers/search.d351de03.min.js", "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.a1609d9a.min.js"></script>
+      
+    
+  </body>
+</html>

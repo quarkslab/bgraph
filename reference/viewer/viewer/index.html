@@ -1,0 +1,2003 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Build Graphs - Exploring AOSP Unified Depedency Graphs">
+      
+      
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-7.1.5">
+    
+    
+      
+        <title>viewer - BGraph</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.bde7dde4.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ef6f36e2.min.css">
+        
+      
+    
+    
+    
+      
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+        <style>:root{--md-text-font-family:"Roboto";--md-code-font-family:"Roboto Mono"}</style>
+      
+    
+    
+    
+      <link rel="stylesheet" href="../../../assets/_mkdocstrings.css">
+    
+    
+      
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="" data-md-color-accent="">
+  
+    
+    <script>function __prefix(e){return new URL("../../..",location).pathname+"."+e}function __get(e,t=localStorage){return JSON.parse(t.getItem(__prefix(e)))}</script>
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#bgraph.viewer" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="BGraph" class="md-header__button md-logo" aria-label="BGraph" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            BGraph
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              viewer
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+      </label>
+      
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" data-md-state="active" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </label>
+      <button type="reset" class="md-search__icon md-icon" aria-label="Clear" tabindex="-1">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        
+<a href="https://github.com/quarkslab/bgraph/" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    quarkslab/bgraph
+  </div>
+</a>
+      </div>
+    
+  </nav>
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="BGraph" class="md-nav__button md-logo" aria-label="BGraph" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
+
+    </a>
+    BGraph
+  </label>
+  
+    <div class="md-nav__source">
+      
+<a href="https://github.com/quarkslab/bgraph/" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    quarkslab/bgraph
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        Overview
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../installation/" class="md-nav__link">
+        Installation
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../docker/" class="md-nav__link">
+        Docker
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../building/" class="md-nav__link">
+        Building
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../query/" class="md-nav__link">
+        Querying
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../explanations/" class="md-nav__link">
+        Innerworkings
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../contribute/" class="md-nav__link">
+        Contribution
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../roadmap/" class="md-nav__link">
+        Roadmap
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../limitations/" class="md-nav__link">
+        Limitations
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_10" type="checkbox" id="__nav_10" checked>
+      
+      <label class="md-nav__link" for="__nav_10">
+        API Reference
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="API Reference" data-md-level="1">
+        <label class="md-nav__title" for="__nav_10">
+          <span class="md-nav__icon md-icon"></span>
+          API Reference
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../builder/builder/" class="md-nav__link">
+        builder
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../parsers/parsers/" class="md-nav__link">
+        parsers
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          viewer
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        viewer
+      </a>
+      
+        
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#bgraph.viewer" class="md-nav__link">
+    bgraph.viewer
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bgraph.viewer.formatter" class="md-nav__link">
+    formatter
+  </a>
+  
+    <nav class="md-nav" aria-label="formatter">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bgraph.viewer.formatter.format_dot" class="md-nav__link">
+    format_dot()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bgraph.viewer.formatter.format_json" class="md-nav__link">
+    format_json()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bgraph.viewer.formatter.format_result" class="md-nav__link">
+    format_result()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bgraph.viewer.formatter.format_text" class="md-nav__link">
+    format_text()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bgraph.viewer.loader" class="md-nav__link">
+    loader
+  </a>
+  
+    <nav class="md-nav" aria-label="loader">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bgraph.viewer.loader.load_graph" class="md-nav__link">
+    load_graph()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bgraph.viewer.viewer" class="md-nav__link">
+    viewer
+  </a>
+  
+    <nav class="md-nav" aria-label="viewer">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bgraph.viewer.viewer.DEFAULT_TYPES" class="md-nav__link">
+    DEFAULT_TYPES
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bgraph.viewer.viewer.logger" class="md-nav__link">
+    logger
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bgraph.viewer.viewer.find_dependency" class="md-nav__link">
+    find_dependency()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bgraph.viewer.viewer.find_sources" class="md-nav__link">
+    find_sources()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bgraph.viewer.viewer.find_target" class="md-nav__link">
+    find_target()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bgraph.viewer.viewer.get_graph_srcs" class="md-nav__link">
+    get_graph_srcs()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bgraph.viewer.viewer.get_node_type" class="md-nav__link">
+    get_node_type()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bgraph.viewer.viewer.match_node" class="md-nav__link">
+    match_node()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/" class="md-nav__link">
+        utils
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#bgraph.viewer" class="md-nav__link">
+    bgraph.viewer
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bgraph.viewer.formatter" class="md-nav__link">
+    formatter
+  </a>
+  
+    <nav class="md-nav" aria-label="formatter">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bgraph.viewer.formatter.format_dot" class="md-nav__link">
+    format_dot()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bgraph.viewer.formatter.format_json" class="md-nav__link">
+    format_json()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bgraph.viewer.formatter.format_result" class="md-nav__link">
+    format_result()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bgraph.viewer.formatter.format_text" class="md-nav__link">
+    format_text()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bgraph.viewer.loader" class="md-nav__link">
+    loader
+  </a>
+  
+    <nav class="md-nav" aria-label="loader">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bgraph.viewer.loader.load_graph" class="md-nav__link">
+    load_graph()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bgraph.viewer.viewer" class="md-nav__link">
+    viewer
+  </a>
+  
+    <nav class="md-nav" aria-label="viewer">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bgraph.viewer.viewer.DEFAULT_TYPES" class="md-nav__link">
+    DEFAULT_TYPES
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bgraph.viewer.viewer.logger" class="md-nav__link">
+    logger
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bgraph.viewer.viewer.find_dependency" class="md-nav__link">
+    find_dependency()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bgraph.viewer.viewer.find_sources" class="md-nav__link">
+    find_sources()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bgraph.viewer.viewer.find_target" class="md-nav__link">
+    find_target()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bgraph.viewer.viewer.get_graph_srcs" class="md-nav__link">
+    get_graph_srcs()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bgraph.viewer.viewer.get_node_type" class="md-nav__link">
+    get_node_type()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bgraph.viewer.viewer.match_node" class="md-nav__link">
+    match_node()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content" data-md-component="content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                  <a href="https://github.com/quarkslab/bgraph/edit/master/docs/reference/viewer/viewer.md" title="Edit this page" class="md-content__button md-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25z"/></svg>
+                  </a>
+                
+                
+                  <h1>viewer</h1>
+                
+                <div class="doc doc-object doc-module">
+
+<a id="bgraph.viewer"></a>
+    <div class="doc doc-contents first">
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+  <div class="doc doc-object doc-module">
+
+
+
+<h2 id="bgraph.viewer.formatter" class="doc doc-heading">
+        <code>formatter</code>
+
+
+
+</h2>
+
+    <div class="doc doc-contents ">
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+  <div class="doc doc-object doc-function">
+
+
+
+<h3 id="bgraph.viewer.formatter.format_dot" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">format_dot</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">results</span><span class="p">,</span> <span class="n">query</span><span class="p">,</span> <span class="n">query_value</span><span class="p">)</span></code>
+
+
+</h3>
+
+    <div class="doc doc-contents ">
+
+      <p>Output result as DOT.</p>
+
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>graph</code></td>
+        <td><code>DiGraph</code></td>
+        <td><p>BGraph</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>results</code></td>
+        <td><code>List[str]</code></td>
+        <td><p>Results for the query</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>query</code></td>
+        <td><code>QueryType</code></td>
+        <td><p>Type of the query</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>query_value</code></td>
+        <td><code>str</code></td>
+        <td><p>Query value</p></td>
+        <td><em>required</em></td>
+      </tr>
+  </tbody>
+</table>
+        <details class="quote">
+          <summary>Source code in <code>bgraph/viewer/formatter.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">format_dot</span><span class="p">(</span>
+    <span class="n">graph</span><span class="p">:</span> <span class="n">BGraph</span><span class="p">,</span> <span class="n">results</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">query</span><span class="p">:</span> <span class="n">QueryType</span><span class="p">,</span> <span class="n">query_value</span><span class="p">:</span> <span class="nb">str</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Output result as DOT.</span>
+
+<span class="sd">    :param graph: BGraph</span>
+<span class="sd">    :param results: Results for the query</span>
+<span class="sd">    :param query: Type of the query</span>
+<span class="sd">    :param query_value: Query value</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">query</span> <span class="o">==</span> <span class="n">QueryType</span><span class="o">.</span><span class="n">SOURCE</span><span class="p">:</span>
+        <span class="n">subgraph</span> <span class="o">=</span> <span class="n">networkx</span><span class="o">.</span><span class="n">generators</span><span class="o">.</span><span class="n">ego_graph</span><span class="p">(</span>
+            <span class="n">graph</span><span class="p">,</span> <span class="n">query_value</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">radius</span><span class="o">=</span><span class="kc">None</span>
+        <span class="p">)</span>
+    <span class="k">elif</span> <span class="n">query</span> <span class="o">==</span> <span class="n">QueryType</span><span class="o">.</span><span class="n">TARGET</span><span class="p">:</span>
+        <span class="n">subgraph</span> <span class="o">=</span> <span class="n">networkx</span><span class="o">.</span><span class="n">generators</span><span class="o">.</span><span class="n">ego_graph</span><span class="p">(</span>
+            <span class="n">graph</span><span class="o">.</span><span class="n">reverse</span><span class="p">(),</span> <span class="n">query_value</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">radius</span><span class="o">=</span><span class="kc">None</span>
+        <span class="p">)</span>
+    <span class="k">elif</span> <span class="n">query</span> <span class="o">==</span> <span class="n">QueryType</span><span class="o">.</span><span class="n">DEPENDENCY</span><span class="p">:</span>
+        <span class="n">subgraph</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">subgraph</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Not implemented yet&quot;</span><span class="p">)</span>
+
+    <span class="n">pydot_graph</span> <span class="o">=</span> <span class="n">networkx</span><span class="o">.</span><span class="n">nx_pydot</span><span class="o">.</span><span class="n">to_pydot</span><span class="p">(</span><span class="n">subgraph</span><span class="p">)</span>
+
+    <span class="c1"># Clean data</span>
+    <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">pydot_graph</span><span class="o">.</span><span class="n">get_nodes</span><span class="p">():</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">del</span> <span class="n">node</span><span class="o">.</span><span class="n">obj_dict</span><span class="p">[</span><span class="s2">&quot;attributes&quot;</span><span class="p">][</span><span class="s2">&quot;data&quot;</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="k">pass</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">target</span> <span class="o">=</span> <span class="n">pydot_graph</span><span class="o">.</span><span class="n">get_node</span><span class="p">(</span><span class="n">pydot</span><span class="o">.</span><span class="n">quote_if_necessary</span><span class="p">(</span><span class="n">query_value</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">bgraph</span><span class="o">.</span><span class="n">exc</span><span class="o">.</span><span class="n">BGraphNodeNotFound</span><span class="p">(</span><span class="s2">&quot;Unable to find node&quot;</span><span class="p">)</span>
+
+    <span class="n">target</span><span class="o">.</span><span class="n">set_shape</span><span class="p">(</span><span class="s2">&quot;box&quot;</span><span class="p">)</span>
+    <span class="n">target</span><span class="o">.</span><span class="n">set_color</span><span class="p">(</span><span class="s2">&quot;red&quot;</span><span class="p">)</span>
+
+    <span class="n">typer</span><span class="o">.</span><span class="n">echo</span><span class="p">(</span><span class="n">pydot_graph</span><span class="p">)</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-function">
+
+
+
+<h3 id="bgraph.viewer.formatter.format_json" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">format_json</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">results</span><span class="p">,</span> <span class="n">query</span><span class="p">,</span> <span class="n">query_value</span><span class="p">)</span></code>
+
+
+</h3>
+
+    <div class="doc doc-contents ">
+
+      <p>Output the result as JSON</p>
+
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>graph</code></td>
+        <td><code>DiGraph</code></td>
+        <td><p>BGraph</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>results</code></td>
+        <td><code>List[str]</code></td>
+        <td><p>Results for the query</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>query</code></td>
+        <td><code>QueryType</code></td>
+        <td><p>Type of the query</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>query_value</code></td>
+        <td><code>str</code></td>
+        <td><p>Query value</p></td>
+        <td><em>required</em></td>
+      </tr>
+  </tbody>
+</table>
+        <details class="quote">
+          <summary>Source code in <code>bgraph/viewer/formatter.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">format_json</span><span class="p">(</span>
+    <span class="n">graph</span><span class="p">:</span> <span class="n">BGraph</span><span class="p">,</span> <span class="n">results</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">query</span><span class="p">:</span> <span class="n">QueryType</span><span class="p">,</span> <span class="n">query_value</span><span class="p">:</span> <span class="nb">str</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Output the result as JSON</span>
+
+<span class="sd">    :param graph: BGraph</span>
+<span class="sd">    :param results: Results for the query</span>
+<span class="sd">    :param query: Type of the query</span>
+<span class="sd">    :param query_value: Query value</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">query_dict</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">QueryType</span><span class="o">.</span><span class="n">TARGET</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;target&quot;</span><span class="p">,</span> <span class="s2">&quot;Search sources for a target&quot;</span><span class="p">],</span>
+        <span class="n">QueryType</span><span class="o">.</span><span class="n">SOURCE</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;sources&quot;</span><span class="p">,</span> <span class="s2">&quot;Search target for a source&quot;</span><span class="p">],</span>
+        <span class="n">QueryType</span><span class="o">.</span><span class="n">DEPENDENCY</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;dependency&quot;</span><span class="p">,</span> <span class="s2">&quot;Search dependencies for a target&quot;</span><span class="p">],</span>
+    <span class="p">}</span>
+
+    <span class="n">result_dict</span><span class="p">:</span> <span class="n">ResultDict</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">if</span> <span class="n">query</span> <span class="o">==</span> <span class="n">QueryType</span><span class="o">.</span><span class="n">TARGET</span><span class="p">:</span>
+        <span class="n">result_dict</span><span class="p">[</span><span class="s2">&quot;sources&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">results</span>
+    <span class="k">elif</span> <span class="n">query</span> <span class="o">==</span> <span class="n">QueryType</span><span class="o">.</span><span class="n">DEPENDENCY</span> <span class="ow">or</span> <span class="n">query</span> <span class="o">==</span> <span class="n">QueryType</span><span class="o">.</span><span class="n">SOURCE</span><span class="p">:</span>
+        <span class="n">result_dict</span><span class="p">[</span><span class="s2">&quot;target&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">result</span> <span class="ow">in</span> <span class="n">results</span><span class="p">:</span>
+            <span class="n">result_dict</span><span class="p">[</span><span class="s2">&quot;target&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">bgraph</span><span class="o">.</span><span class="n">viewer</span><span class="o">.</span><span class="n">get_node_type</span><span class="p">(</span><span class="n">graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">result</span><span class="p">]))</span>
+            <span class="p">)</span>
+
+    <span class="n">typer</span><span class="o">.</span><span class="n">echo</span><span class="p">(</span>
+        <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;_meta&quot;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="s2">&quot;query&quot;</span><span class="p">:</span> <span class="n">query_dict</span><span class="p">[</span><span class="n">query</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span>
+                    <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="n">query_dict</span><span class="p">[</span><span class="n">query</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span>
+                    <span class="s2">&quot;query_value&quot;</span><span class="p">:</span> <span class="n">query_value</span><span class="p">,</span>
+                <span class="p">},</span>
+                <span class="s2">&quot;result&quot;</span><span class="p">:</span> <span class="n">result_dict</span><span class="p">,</span>
+            <span class="p">},</span>
+            <span class="n">indent</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-function">
+
+
+
+<h3 id="bgraph.viewer.formatter.format_result" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">format_result</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">results</span><span class="p">,</span> <span class="n">query</span><span class="p">,</span> <span class="n">query_value</span><span class="p">,</span> <span class="n">out_choice</span><span class="p">)</span></code>
+
+
+</h3>
+
+    <div class="doc doc-contents ">
+
+      <p>Format the result of the viewer.</p>
+
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>graph</code></td>
+        <td><code>DiGraph</code></td>
+        <td><p>BGraph</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>results</code></td>
+        <td><code>List[str]</code></td>
+        <td><p>Results for the query</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>query</code></td>
+        <td><code>QueryType</code></td>
+        <td><p>Type of the query</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>query_value</code></td>
+        <td><code>str</code></td>
+        <td><p>Query value</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>out_choice</code></td>
+        <td><code>OutChoice</code></td>
+        <td><p>Out format</p></td>
+        <td><em>required</em></td>
+      </tr>
+  </tbody>
+</table>
+        <details class="quote">
+          <summary>Source code in <code>bgraph/viewer/formatter.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">format_result</span><span class="p">(</span>
+    <span class="n">graph</span><span class="p">:</span> <span class="n">BGraph</span><span class="p">,</span>
+    <span class="n">results</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+    <span class="n">query</span><span class="p">:</span> <span class="n">QueryType</span><span class="p">,</span>
+    <span class="n">query_value</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">out_choice</span><span class="p">:</span> <span class="n">OutChoice</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Format the result of the viewer.</span>
+
+<span class="sd">    :param graph: BGraph</span>
+<span class="sd">    :param results: Results for the query</span>
+<span class="sd">    :param query: Type of the query</span>
+<span class="sd">    :param query_value: Query value</span>
+<span class="sd">    :param out_choice: Out format</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">format_methods</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">out_choice</span><span class="o">.</span><span class="n">TXT</span><span class="p">:</span> <span class="n">format_text</span><span class="p">,</span>
+        <span class="n">out_choice</span><span class="o">.</span><span class="n">JSON</span><span class="p">:</span> <span class="n">format_json</span><span class="p">,</span>
+        <span class="n">out_choice</span><span class="o">.</span><span class="n">DOT</span><span class="p">:</span> <span class="n">format_dot</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="k">return</span> <span class="n">format_methods</span><span class="p">[</span><span class="n">out_choice</span><span class="p">](</span><span class="n">graph</span><span class="p">,</span> <span class="n">results</span><span class="p">,</span> <span class="n">query</span><span class="p">,</span> <span class="n">query_value</span><span class="p">)</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-function">
+
+
+
+<h3 id="bgraph.viewer.formatter.format_text" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">format_text</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">results</span><span class="p">,</span> <span class="n">query</span><span class="p">,</span> <span class="n">query_value</span><span class="p">)</span></code>
+
+
+</h3>
+
+    <div class="doc doc-contents ">
+
+      <p>Format the results for text consumption (default value).</p>
+<p>Use rich to do some pretty formatting.</p>
+
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>graph</code></td>
+        <td><code>DiGraph</code></td>
+        <td><p>BGraph</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>results</code></td>
+        <td><code>List[str]</code></td>
+        <td><p>Results for the query</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>query</code></td>
+        <td><code>QueryType</code></td>
+        <td><p>Type of the query</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>query_value</code></td>
+        <td><code>str</code></td>
+        <td><p>Query value</p></td>
+        <td><em>required</em></td>
+      </tr>
+  </tbody>
+</table>
+        <details class="quote">
+          <summary>Source code in <code>bgraph/viewer/formatter.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">format_text</span><span class="p">(</span>
+    <span class="n">graph</span><span class="p">:</span> <span class="n">BGraph</span><span class="p">,</span> <span class="n">results</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">query</span><span class="p">:</span> <span class="n">QueryType</span><span class="p">,</span> <span class="n">query_value</span><span class="p">:</span> <span class="nb">str</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Format the results for text consumption (default value).</span>
+
+<span class="sd">    Use rich to do some pretty formatting.</span>
+
+<span class="sd">    :param graph: BGraph</span>
+<span class="sd">    :param results: Results for the query</span>
+<span class="sd">    :param query: Type of the query</span>
+<span class="sd">    :param query_value: Query value</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">table</span> <span class="o">=</span> <span class="n">rich</span><span class="o">.</span><span class="n">table</span><span class="o">.</span><span class="n">Table</span><span class="p">(</span><span class="n">box</span><span class="o">=</span><span class="n">rich</span><span class="o">.</span><span class="n">box</span><span class="o">.</span><span class="n">MINIMAL_DOUBLE_HEAD</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">query</span> <span class="o">==</span> <span class="n">QueryType</span><span class="o">.</span><span class="n">TARGET</span><span class="p">:</span>
+        <span class="n">table</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Sources for the target </span><span class="si">{</span><span class="n">query_value</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">table</span><span class="o">.</span><span class="n">add_column</span><span class="p">(</span><span class="s2">&quot;Filename&quot;</span><span class="p">,</span> <span class="n">justify</span><span class="o">=</span><span class="s2">&quot;left&quot;</span><span class="p">)</span>
+        <span class="n">table</span><span class="o">.</span><span class="n">add_column</span><span class="p">(</span><span class="s2">&quot;File type&quot;</span><span class="p">,</span> <span class="n">justify</span><span class="o">=</span><span class="s2">&quot;right&quot;</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">result</span> <span class="ow">in</span> <span class="n">results</span><span class="p">:</span>
+            <span class="n">table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">Path</span><span class="p">(</span><span class="n">result</span><span class="p">)</span><span class="o">.</span><span class="n">suffix</span><span class="p">)</span>
+
+    <span class="k">elif</span> <span class="n">query</span> <span class="o">==</span> <span class="n">QueryType</span><span class="o">.</span><span class="n">DEPENDENCY</span><span class="p">:</span>
+        <span class="n">table</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Dependencies for the target </span><span class="si">{</span><span class="n">query_value</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">table</span><span class="o">.</span><span class="n">add_column</span><span class="p">(</span><span class="s2">&quot;Dependency&quot;</span><span class="p">)</span>
+        <span class="n">table</span><span class="o">.</span><span class="n">add_column</span><span class="p">(</span><span class="s2">&quot;Type&quot;</span><span class="p">)</span>
+        <span class="n">table</span><span class="o">.</span><span class="n">add_column</span><span class="p">(</span><span class="s2">&quot;Ascending&quot;</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">result</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">results</span><span class="p">):</span>
+
+            <span class="n">ascending</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="s2">&quot;:heavy_check_mark:&quot;</span>
+                <span class="k">if</span> <span class="n">networkx</span><span class="o">.</span><span class="n">has_path</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">result</span><span class="p">,</span> <span class="n">query_value</span><span class="p">)</span>
+                <span class="k">else</span> <span class="s2">&quot;:heavy_multiplication_x:&quot;</span>
+            <span class="p">)</span>
+            <span class="n">table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span>
+                <span class="n">result</span><span class="p">,</span> <span class="n">bgraph</span><span class="o">.</span><span class="n">viewer</span><span class="o">.</span><span class="n">get_node_type</span><span class="p">(</span><span class="n">graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">result</span><span class="p">]),</span> <span class="n">ascending</span>
+            <span class="p">)</span>
+
+    <span class="k">elif</span> <span class="n">query</span> <span class="o">==</span> <span class="n">QueryType</span><span class="o">.</span><span class="n">SOURCE</span><span class="p">:</span>
+        <span class="n">table</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Dependencies for source file </span><span class="si">{</span><span class="n">Path</span><span class="p">(</span><span class="n">query_value</span><span class="p">)</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">table</span><span class="o">.</span><span class="n">add_column</span><span class="p">(</span><span class="s2">&quot;Target&quot;</span><span class="p">)</span>
+        <span class="n">table</span><span class="o">.</span><span class="n">add_column</span><span class="p">(</span><span class="s2">&quot;Type&quot;</span><span class="p">)</span>
+        <span class="n">table</span><span class="o">.</span><span class="n">add_column</span><span class="p">(</span><span class="s2">&quot;Distance&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Generate the graph to compute the distance</span>
+        <span class="c1"># Since the graph is much simpler than the original one, it is easier to compute</span>
+        <span class="c1"># the distance inside this one.</span>
+        <span class="n">generated_graph</span><span class="p">:</span> <span class="n">BGraph</span> <span class="o">=</span> <span class="n">networkx</span><span class="o">.</span><span class="n">generators</span><span class="o">.</span><span class="n">ego_graph</span><span class="p">(</span>
+            <span class="n">graph</span><span class="p">,</span> <span class="n">query_value</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">radius</span><span class="o">=</span><span class="kc">None</span>
+        <span class="p">)</span>
+
+        <span class="n">row_results</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">NodeType</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">(</span>
+                <span class="n">result</span><span class="p">,</span>
+                <span class="n">bgraph</span><span class="o">.</span><span class="n">viewer</span><span class="o">.</span><span class="n">get_node_type</span><span class="p">(</span><span class="n">graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">result</span><span class="p">]),</span>
+                <span class="n">networkx</span><span class="o">.</span><span class="n">algorithms</span><span class="o">.</span><span class="n">shortest_path_length</span><span class="p">(</span>
+                    <span class="n">generated_graph</span><span class="p">,</span> <span class="n">query_value</span><span class="p">,</span> <span class="n">result</span>
+                <span class="p">),</span>
+            <span class="p">)</span>
+            <span class="k">for</span> <span class="n">result</span> <span class="ow">in</span> <span class="n">results</span>
+        <span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">result</span><span class="p">,</span> <span class="n">node_type</span><span class="p">,</span> <span class="n">distance</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">row_results</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="mi">2</span><span class="p">]):</span>
+            <span class="n">table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">node_type</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">distance</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="n">console</span> <span class="o">=</span> <span class="n">rich</span><span class="o">.</span><span class="n">console</span><span class="o">.</span><span class="n">Console</span><span class="p">()</span>
+    <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="n">table</span><span class="p">)</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-module">
+
+
+
+<h2 id="bgraph.viewer.loader" class="doc doc-heading">
+        <code>loader</code>
+
+
+
+</h2>
+
+    <div class="doc doc-contents ">
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+  <div class="doc doc-object doc-function">
+
+
+
+<h3 id="bgraph.viewer.loader.load_graph" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">load_graph</span><span class="p">(</span><span class="n">graph_path</span><span class="p">)</span></code>
+
+
+</h3>
+
+    <div class="doc doc-contents ">
+
+      <p>Load a B-Graph and return the DiGraph associated.</p>
+
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>graph</code></td>
+        <td><code></code></td>
+        <td><p>Path to the graph file (stored with pickle)</p></td>
+        <td><em>required</em></td>
+      </tr>
+  </tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>DiGraph</code></td>
+      <td><p>A DiGraph</p></td>
+    </tr>
+  </tbody>
+</table>
+        <details class="quote">
+          <summary>Source code in <code>bgraph/viewer/loader.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">load_graph</span><span class="p">(</span><span class="n">graph_path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">BGraph</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Load a B-Graph and return the DiGraph associated.</span>
+
+<span class="sd">    :param graph: Path to the graph file (stored with pickle)</span>
+<span class="sd">    :return: A DiGraph</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">graph</span><span class="p">:</span> <span class="n">BGraph</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="n">graph_path</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">))</span>
+    <span class="k">except</span> <span class="p">(</span><span class="n">pickle</span><span class="o">.</span><span class="n">PickleError</span><span class="p">,</span> <span class="ne">FileNotFoundError</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="n">bgraph</span><span class="o">.</span><span class="n">exc</span><span class="o">.</span><span class="n">BGraphLoadingException</span><span class="p">(</span><span class="s2">&quot;Unable to load the graph.&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">graph</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-module">
+
+
+
+<h2 id="bgraph.viewer.viewer" class="doc doc-heading">
+        <code>viewer</code>
+
+
+
+</h2>
+
+    <div class="doc doc-contents ">
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+  <div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="bgraph.viewer.viewer.DEFAULT_TYPES" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">DEFAULT_TYPES</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span></code>
+
+
+</h3>
+
+    <div class="doc doc-contents ">
+
+      <p>Default soong types to consider</p>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="bgraph.viewer.viewer.logger" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">logger</span><span class="p">:</span> <span class="n">Logger</span></code>
+
+
+</h3>
+
+    <div class="doc doc-contents ">
+
+      <p>Logger.</p>
+    </div>
+
+  </div>
+
+
+
+
+
+  <div class="doc doc-object doc-function">
+
+
+
+<h3 id="bgraph.viewer.viewer.find_dependency" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">find_dependency</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">origin</span><span class="p">)</span></code>
+
+
+</h3>
+
+    <div class="doc doc-contents ">
+
+      <p>Resolve dependencies in a graph.</p>
+<p>Given an origin (which is <em>not</em> a source file), find all dependents targets</p>
+
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>graph</code></td>
+        <td><code>DiGraph</code></td>
+        <td><p>Graph to search</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>origin</code></td>
+        <td><code>str</code></td>
+        <td><p>Origin of the query</p></td>
+        <td><em>required</em></td>
+      </tr>
+  </tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>List[str]</code></td>
+      <td><p>A list of dependent target</p></td>
+    </tr>
+  </tbody>
+</table>
+        <details class="quote">
+          <summary>Source code in <code>bgraph/viewer/viewer.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">find_dependency</span><span class="p">(</span><span class="n">graph</span><span class="p">:</span> <span class="n">BGraph</span><span class="p">,</span> <span class="n">origin</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;Resolve dependencies in a graph.</span>
+
+<span class="sd">    Given an origin (which is *not* a source file), find all dependents targets</span>
+
+<span class="sd">    :param graph: Graph to search</span>
+<span class="sd">    :param origin: Origin of the query</span>
+<span class="sd">    :return: A list of dependent target</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">origin</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">graph</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Origin not found </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">origin</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">[]</span>
+
+    <span class="c1"># Get dependencies in the graph</span>
+    <span class="n">subgraph</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">generators</span><span class="o">.</span><span class="n">ego_graph</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">origin</span><span class="p">,</span> <span class="n">radius</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">other_subgraph</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">generators</span><span class="o">.</span><span class="n">ego_graph</span><span class="p">(</span>
+        <span class="n">graph</span><span class="o">.</span><span class="n">reverse</span><span class="p">(),</span> <span class="n">origin</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">radius</span><span class="o">=</span><span class="kc">None</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">subgraph</span><span class="p">)</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">other_subgraph</span><span class="p">)))</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-function">
+
+
+
+<h3 id="bgraph.viewer.viewer.find_sources" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">find_sources</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span></code>
+
+
+</h3>
+
+    <div class="doc doc-contents ">
+
+      <p>Find the sources of target.</p>
+<p>Recursively in the graph, search for all sources files of a target (or a target
+ dependencies).</p>
+<p>TODO(dm):
+    For conditionals, there may also exists precomputed binaries as the target.
+    Find a way to deal with those</p>
+
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>graph</code></td>
+        <td><code>DiGraph</code></td>
+        <td><p>Graph yo search</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>target</code></td>
+        <td><code>str</code></td>
+        <td><p>Origin of the query (final target)</p></td>
+        <td><em>required</em></td>
+      </tr>
+  </tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>List[str]</code></td>
+      <td><p>A list of source files</p></td>
+    </tr>
+  </tbody>
+</table>
+        <details class="quote">
+          <summary>Source code in <code>bgraph/viewer/viewer.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">find_sources</span><span class="p">(</span><span class="n">graph</span><span class="p">:</span> <span class="n">BGraph</span><span class="p">,</span> <span class="n">target</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;Find the sources of target.</span>
+
+<span class="sd">    Recursively in the graph, search for all sources files of a target (or a target</span>
+<span class="sd">     dependencies).</span>
+
+<span class="sd">    TODO(dm):</span>
+<span class="sd">        For conditionals, there may also exists precomputed binaries as the target.</span>
+<span class="sd">        Find a way to deal with those</span>
+
+<span class="sd">    :param graph: Graph yo search</span>
+<span class="sd">    :param target: Origin of the query (final target)</span>
+<span class="sd">    :return: A list of source files</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">target</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">graph</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">[]</span>
+
+    <span class="n">subgraph</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">generators</span><span class="o">.</span><span class="n">ego_graph</span><span class="p">(</span>
+        <span class="n">graph</span><span class="o">.</span><span class="n">reverse</span><span class="p">(),</span> <span class="n">target</span><span class="p">,</span> <span class="n">radius</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="kc">False</span>
+    <span class="p">)</span>
+    <span class="n">dependencies</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">node</span> <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">subgraph</span> <span class="k">if</span> <span class="nb">next</span><span class="p">(</span><span class="n">subgraph</span><span class="o">.</span><span class="n">successors</span><span class="p">(</span><span class="n">node</span><span class="p">),</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span>
+    <span class="p">]</span>
+
+    <span class="c1"># Filtering step: since we don&#39;t understand conditionals (yet), filter out bogus</span>
+    <span class="c1"># dependencies</span>
+    <span class="c1"># TODO(dm)</span>
+
+    <span class="k">return</span> <span class="n">dependencies</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-function">
+
+
+
+<h3 id="bgraph.viewer.viewer.find_target" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">find_target</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">return_types</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;cc_library_shared&#39;</span><span class="p">,</span> <span class="s1">&#39;cc_library&#39;</span><span class="p">,</span> <span class="s1">&#39;cc_binary&#39;</span><span class="p">,</span> <span class="s1">&#39;cc_library_static&#39;</span><span class="p">,</span> <span class="s1">&#39;android_app&#39;</span><span class="p">],</span> <span class="n">radius</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+
+
+</h3>
+
+    <div class="doc doc-contents ">
+
+      <p>Given a source file, find all dependent targets.</p>
+<p>This is a bit trickier as the source file may be given with an incomplete path.
+However, we don't want to give absurds results, so if more than 1 file matches, an
+error is raised.</p>
+<p>TODO(dm):
+    - Intersect for multiple sources files
+    - Better handling of return types</p>
+
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>graph</code></td>
+        <td><code>DiGraph</code></td>
+        <td><p>The graph to search</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>source</code></td>
+        <td><code>str</code></td>
+        <td><p>Source file name</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>return_types</code></td>
+        <td><code>List[str]</code></td>
+        <td><p>Optional. List of types to consider as valid types</p></td>
+        <td><code>[&#39;cc_library_shared&#39;, &#39;cc_library&#39;, &#39;cc_binary&#39;, &#39;cc_library_static&#39;, &#39;android_app&#39;]</code></td>
+      </tr>
+      <tr>
+        <td><code>radius</code></td>
+        <td><code>Optional[int]</code></td>
+        <td><p>Optional. How far should the graph go. Default is None : consider all the dependencies. A positive integer will reduce to node at at most <code>radius</code> distance.</p></td>
+        <td><code>None</code></td>
+      </tr>
+  </tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>Tuple[str, List[str]]</code></td>
+      <td><p>A tuple with the exact match and the list of results</p></td>
+    </tr>
+  </tbody>
+</table>
+        <details class="quote">
+          <summary>Source code in <code>bgraph/viewer/viewer.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">find_target</span><span class="p">(</span>
+    <span class="n">graph</span><span class="p">:</span> <span class="n">BGraph</span><span class="p">,</span>
+    <span class="n">source</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">return_types</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">DEFAULT_TYPES</span><span class="p">,</span>
+    <span class="n">radius</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
+    <span class="sd">&quot;&quot;&quot;Given a source file, find all dependent targets.</span>
+
+<span class="sd">    This is a bit trickier as the source file may be given with an incomplete path.</span>
+<span class="sd">    However, we don&#39;t want to give absurds results, so if more than 1 file matches, an</span>
+<span class="sd">    error is raised.</span>
+
+<span class="sd">    TODO(dm):</span>
+<span class="sd">        - Intersect for multiple sources files</span>
+<span class="sd">        - Better handling of return types</span>
+
+<span class="sd">    :param graph: The graph to search</span>
+<span class="sd">    :param source: Source file name</span>
+<span class="sd">    :param return_types: Optional. List of types to consider as valid types</span>
+<span class="sd">    :param radius: Optional. How far should the graph go.</span>
+<span class="sd">        Default is None : consider all the dependencies. A positive integer will reduce</span>
+<span class="sd">        to node at at most `radius` distance.</span>
+<span class="sd">    :return: A tuple with the exact match and the list of results</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">graph_srcs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">get_graph_srcs</span><span class="p">(</span><span class="n">graph</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">matched_node</span> <span class="o">=</span> <span class="n">match_node</span><span class="p">(</span><span class="n">graph_srcs</span><span class="p">,</span> <span class="n">source</span><span class="p">)</span>
+    <span class="k">except</span> <span class="p">(</span><span class="n">bgraph</span><span class="o">.</span><span class="n">exc</span><span class="o">.</span><span class="n">BGraphNodeNotFound</span><span class="p">,</span> <span class="n">bgraph</span><span class="o">.</span><span class="n">exc</span><span class="o">.</span><span class="n">BGraphTooManyNodes</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Failed to find node with error </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+        <span class="k">return</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="p">[]</span>
+
+    <span class="n">subgraph</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">generators</span><span class="o">.</span><span class="n">ego_graph</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">matched_node</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">radius</span><span class="o">=</span><span class="n">radius</span><span class="p">)</span>
+    <span class="n">results</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">node</span>
+        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">subgraph</span>
+        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span>
+            <span class="n">node_type</span> <span class="ow">in</span> <span class="n">return_types</span>
+            <span class="k">for</span> <span class="n">node_type</span> <span class="ow">in</span> <span class="n">get_node_type</span><span class="p">(</span><span class="n">graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">node</span><span class="p">],</span> <span class="n">all_types</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="p">)</span>
+    <span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">matched_node</span><span class="p">,</span> <span class="n">results</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-function">
+
+
+
+<h3 id="bgraph.viewer.viewer.get_graph_srcs" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">get_graph_srcs</span><span class="p">(</span><span class="n">graph</span><span class="p">)</span></code>
+
+
+</h3>
+
+    <div class="doc doc-contents ">
+
+      <p>Filter the graph to return only source nodes.</p>
+<p>This method is used to improve the efficiency of the <code>match_node</code> method.</p>
+
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>graph</code></td>
+        <td><code>DiGraph</code></td>
+        <td><p>The BGraph to filter</p></td>
+        <td><em>required</em></td>
+      </tr>
+  </tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>List[str]</code></td>
+      <td><p>A list of graph nodes representing source file.</p></td>
+    </tr>
+  </tbody>
+</table>
+        <details class="quote">
+          <summary>Source code in <code>bgraph/viewer/viewer.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="nd">@functools</span><span class="o">.</span><span class="n">lru_cache</span><span class="p">(</span><span class="n">maxsize</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">get_graph_srcs</span><span class="p">(</span><span class="n">graph</span><span class="p">:</span> <span class="n">BGraph</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;Filter the graph to return only source nodes.</span>
+
+<span class="sd">    This method is used to improve the efficiency of the `match_node` method.</span>
+
+<span class="sd">    :param graph: The BGraph to filter</span>
+<span class="sd">    :return: A list of graph nodes representing source file.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">node</span> <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">graph</span> <span class="k">if</span> <span class="n">get_node_type</span><span class="p">(</span><span class="n">node</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;source&quot;</span><span class="p">]</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-function">
+
+
+
+<h3 id="bgraph.viewer.viewer.get_node_type" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">get_node_type</span><span class="p">(</span><span class="n">node_d</span><span class="p">,</span> <span class="n">all_types</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></code>
+
+
+</h3>
+
+    <div class="doc doc-contents ">
+
+      <p>Get the node type</p>
+<p>Sources nodes (e.g leaves) have no data associated so we use this fact.</p>
+
+        <details class="quote">
+          <summary>Source code in <code>bgraph/viewer/viewer.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">get_node_type</span><span class="p">(</span>
+    <span class="n">node_d</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">all_types</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">NodeType</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">NodeType</span><span class="p">]]:</span>
+    <span class="sd">&quot;&quot;&quot;Get the node type</span>
+
+<span class="sd">    Sources nodes (e.g leaves) have no data associated so we use this fact.</span>
+
+<span class="sd">    :param node_d A node</span>
+<span class="sd">    :param all_types Optional. Return all the types possible for the node</span>
+<span class="sd">    :return Type(s) of the node</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">node_types</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">node</span><span class="p">[</span><span class="n">bgraph</span><span class="o">.</span><span class="n">parsers</span><span class="o">.</span><span class="n">SoongParser</span><span class="o">.</span><span class="n">SECTION_TYPE</span><span class="p">]</span> <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">node_d</span><span class="p">[</span><span class="s2">&quot;data&quot;</span><span class="p">]</span>
+        <span class="p">]</span>
+    <span class="k">except</span> <span class="p">(</span><span class="ne">TypeError</span><span class="p">,</span> <span class="ne">KeyError</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;source&quot;</span> <span class="k">if</span> <span class="n">all_types</span> <span class="ow">is</span> <span class="kc">False</span> <span class="k">else</span> <span class="p">[</span><span class="s2">&quot;source&quot;</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">all_types</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">node_types</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># Return only the first node type</span>
+        <span class="k">return</span> <span class="n">node_types</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-function">
+
+
+
+<h3 id="bgraph.viewer.viewer.match_node" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">match_node</span><span class="p">(</span><span class="n">graph_srcs</span><span class="p">,</span> <span class="n">node_name</span><span class="p">)</span></code>
+
+
+</h3>
+
+    <div class="doc doc-contents ">
+
+      <p>Search for a node matching the name given as an argument.</p>
+
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>graph_srcs</code></td>
+        <td><code>List[str]</code></td>
+        <td><p>A list of source node in the graph</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>node_name</code></td>
+        <td><code>str</code></td>
+        <td><p>A node name</p></td>
+        <td><em>required</em></td>
+      </tr>
+  </tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>str</code></td>
+      <td><p>A node</p></td>
+    </tr>
+  </tbody>
+</table>
+        <details class="quote">
+          <summary>Source code in <code>bgraph/viewer/viewer.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">match_node</span><span class="p">(</span><span class="n">graph_srcs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">node_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Search for a node matching the name given as an argument.</span>
+
+<span class="sd">    :param graph_srcs: A list of source node in the graph</span>
+<span class="sd">    :param node_name: A node name</span>
+<span class="sd">    :return: A node</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">potential_results</span> <span class="o">=</span> <span class="p">[</span><span class="n">node</span> <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">graph_srcs</span> <span class="k">if</span> <span class="n">node_name</span> <span class="ow">in</span> <span class="n">node</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">potential_results</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">bgraph</span><span class="o">.</span><span class="n">exc</span><span class="o">.</span><span class="n">BGraphNodeNotFound</span><span class="p">(</span><span class="s2">&quot;Found 0 results&quot;</span><span class="p">)</span>
+
+    <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">potential_results</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="c1"># TODO(dm) : We have a problem here because we have too many nodes that may</span>
+        <span class="c1">#  match but it is not supposed to happen.</span>
+        <span class="k">raise</span> <span class="n">bgraph</span><span class="o">.</span><span class="n">exc</span><span class="o">.</span><span class="n">BGraphTooManyNodes</span><span class="p">(</span><span class="s2">&quot;Found many results - refine the search&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">potential_results</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+  </div>
+
+
+
+
+  </div>
+
+    </div>
+
+  </div>
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+        
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <nav class="md-footer__inner md-grid" aria-label="Footer">
+      
+        <a href="../../parsers/parsers/" class="md-footer__link md-footer__link--prev" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              parsers
+            </div>
+          </div>
+        </a>
+      
+      
+        <a href="../../utils/" class="md-footer__link md-footer__link--next" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              utils
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+        Made with
+        <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+          Material for MkDocs
+        </a>
+        
+      </div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    <script id="__config" type="application/json">{"base": "../../..", "features": [], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing"}, "search": "../../../assets/javascripts/workers/search.d351de03.min.js", "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.a1609d9a.min.js"></script>
+      
+    
+  </body>
+</html>
