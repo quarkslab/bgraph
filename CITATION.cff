@@ -5,7 +5,7 @@ abstract: BGraph is a tool designed to generate dependencies graphs from Android
 
 authors:
   - family-names: Challande
-    given-name: Alexis
+    given-names: Alexis
     orcid: "https://orcid.org/0000-0001-9116-709X"
 
 date-released: "2021-06-04"
@@ -17,13 +17,13 @@ license: Apache-2.0
 preferred-citation:
   authors:
   - family-names: Challande
-    given-name: Alexis
+    given-names: Alexis
     orcid: "https://orcid.org/0000-0001-9116-709X"
   - family-names: Renault
-    given-name: Guenael
+    given-names: Guenael
     orcid: "https://orcid.org/0000-0002-7050-9975"
   - family-names: David
-    given-name: Robin
+    given-names: Robin
     orcid: "https://orcid.org/0000-0001-5722-8338"
   title: Exploitation du graphe de dépendance d'AOSP à des fins de sécurité
   type: article
