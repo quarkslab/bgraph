@@ -52,7 +52,7 @@ ENV POETRY_VERSION=1.1.4
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
-RUN curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python3 && \
+RUN curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/d222411ae9d01a04ec8eda348a65aa83852c37d0/get-poetry.py | python3 && \
     curl -sSL https://storage.googleapis.com/git-repo-downloads/repo > /opt/repo/repo && \
     chmod a+x /opt/repo/repo /opt/poetry/bin/poetry
 
