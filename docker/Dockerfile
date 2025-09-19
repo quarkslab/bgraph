@@ -48,11 +48,11 @@ RUN apt-get update && apt-get upgrade -y && apt-get install --no-install-recomme
     build-essential \
     && rm -rf /var/lib/apt/lists/*
 
-ENV POETRY_VERSION=1.1.4
+ENV POETRY_VERSION=1.1.15
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
-RUN curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/d222411ae9d01a04ec8eda348a65aa83852c37d0/get-poetry.py | python3 && \
+RUN curl -sSL https://install.python-poetry.org | python3 - && \
     curl -sSL https://storage.googleapis.com/git-repo-downloads/repo > /opt/repo/repo && \
     chmod a+x /opt/repo/repo /opt/poetry/bin/poetry
 
